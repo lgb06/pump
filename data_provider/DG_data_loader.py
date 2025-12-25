@@ -495,11 +495,6 @@ class NLNEMPloader(Dataset):
         
         for key, exp_data in tqdm(experiments.items(), desc="Loading CSVs"): # key 是 unique_key
             label_idx = label_map[exp_data['label']]
-            if cls_mode == -1:
-                # 二分类
-                if label_idx != 0:
-                    label_idx = 1
-
             file_dict = exp_data['files']
             
             num_channels = 5 if modality == 'Vibration' else 6
@@ -598,7 +593,13 @@ class NLNEMPloader(Dataset):
             else:
                 pass
         
-        
+        # 二分类
+        # 在分层抽样划分后进行，类别置 0 (healthy) 和 1 (faulty)
+        if cls_mode == -1:
+            for i in range(len(y_list)):
+                if y_list[i] != 0:
+                    y_list[i] = 1
+
         print("划分后,一共有 {len(X_list)} 组数据,数据样本统计信息：")
 
         
