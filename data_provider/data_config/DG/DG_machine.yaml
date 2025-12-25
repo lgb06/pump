@@ -1,0 +1,91 @@
+
+task_dataset:
+  CWRU:
+    task_name: classification_PHM
+    dataset_name: DG_CWRU
+    dataset: DG_CWRU
+    data: DG_CWRU
+    root_path: /dataWYL/WYL/PHM-Large-Model/DG_dataset/DG_combined/DG_CWRU
+    label_type: 'global' # 标签映射方式：默认为local，即本地映射；若为global，则为全局映射
+    down_sample: 21 # 降采样系数
+    seq_len: 2048 # 输入序列长度
+    stride_len: 256 # 滑动窗口步长
+    enc_in: 1 # 通道数（不需要传入dataset）3
+    embed: timeF # 时序特征（为了符合units的data_provider框架）
+    num_class: 3 # 分类数
+    
+
+  HUST_bearing:
+    task_name: classification_PHM
+    dataset_name: DG_HUST_bearing
+    dataset: DG_HUST_bearing
+    data: DG_HUST_bearing
+    root_path: /dataWYL/WYL/PHM-Large-Model/DG_dataset/DG_combined/DG_HUST_bearing
+    label_type: 'global' # 标签映射方式：默认为local，即本地映射；若为global，则为全局映射
+    down_sample: 1
+    seq_len: 2048
+    stride_len: 256
+    enc_in: 1 #4
+    embed: timeF
+    num_class: 3
+
+
+  IMS:
+    task_name: classification_PHM
+    dataset_name: DG_IMS
+    dataset: DG_IMS
+    data: DG_IMS
+    root_path: /dataWYL/WYL/PHM-Large-Model/DG_dataset/DG_combined/DG_IMS
+    down_sample: 1
+    seq_len: 2048
+    stride_len: 2048
+    label_type: 'global' # 标签映射方式：默认为local，即本地映射；若为global，则为全局映射
+    enc_in: 1 #3
+    embed: timeF
+    num_class: 3
+  
+  # SCP:
+  #   task_name: classification_PHM
+  #   dataset_name: DG_SCP
+  #   dataset: DG_SCP
+  #   data: DG_SCP
+  #   root_path: /dataWYL/WYL/PHM-Large-Model/DG_dataset/DG_combined/DG_SCP
+  #   down_sample: 2
+  #   seq_len: 2048
+  #   stride_len: 8
+  #   enc_in: 1 #1
+  #   embed: timeF
+  #   num_class: 3
+  #   label_type: 'global' # 标签映射方式：默认为local，即本地映射；若为global，则为全局映射
+
+
+
+  JNU:
+    task_name: classification_PHM
+    dataset_name: DG_JNU
+    dataset: DG_JNU
+    data: DG_JNU
+    root_path: /dataWYL/WYL/PHM-Large-Model/DG_dataset/DG_combined/DG_JNU
+    down_sample: 1
+    seq_len: 2048
+    stride_len: 512
+    enc_in: 1  #1
+    embed: timeF
+    num_class: 3
+    label_type: 'global' # 标签映射方式：默认为local，即本地映射；若为global，则为全局映射
+
+
+  # PHM_XJTU_DG:
+  #   task_name: pretrain_PHM
+  #   dataset_name: PHM_Challenge2024
+  #   dataset: PHM_Challenge2024
+  #   data: PHM_Challenge2024
+  #   root_path: /dataWX/WYL/PHM-Large-Model/PHM_dataset/PHM_Challenge2024
+  #   label_type: 'global' # 标签映射方式：默认为local，即本地映射；若为global，则为全局映射
+  #   down_sample: 10
+  #   seq_len: 2048
+  #   stride_len: 128
+  #   enc_in: 21
+  #   embed: timeF
+  #   num_class: 17 # 分类数
+

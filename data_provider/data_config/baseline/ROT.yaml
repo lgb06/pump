@@ -1,0 +1,15 @@
+task_dataset:
+  PHM_ROT:
+    task_name: classification_PHM
+    dataset_name: ROT
+    dataset: ROT
+    data: ROT
+    root_path: /dataWYL/WYL/PHM-Large-Model/PHM_dataset/ROT
+    data_path: ROT.hdf5
+    label_type: 'local'
+    down_sample: 1
+    seq_len: 2048
+    stride_len: 128
+    enc_in: 2
+    embed: timeF
+    num_class: 4

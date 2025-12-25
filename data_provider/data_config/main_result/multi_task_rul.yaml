@@ -1,0 +1,35 @@
+task_dataset:
+
+  PHM_RUL_XJTU:
+    task_name: RUL_PHM
+    dataset_name: RUL_XJTU
+    dataset: RUL_XJTU
+    data: RUL_XJTU
+    root_path: /dataWYL/WYL/PHM-Large-Model/PHM_dataset/XJTU_RUL_NEW
+    down_sample: 1
+    seq_len: 7680
+    stride_len: 128
+    enc_in: 2
+    embed: timeF
+    num_look_back: 30
+    num_class: 4
+    test_idx: [3,6,9]
+
+
+  # PHM_Challenge2024:
+  #   task_name: classification_PHM
+  #   dataset_name: PHM_Challenge2024
+  #   dataset: PHM_Challenge2024
+  #   data: PHM_Challenge2024
+  #   root_path: /dataWYL/WYL/PHM-Large-Model/PHM_dataset/PHM_Challenge2024
+  #   label_type: 'local' # 标签映射方式：默认为local，即本地映射；若为global，则为全局映射
+  #   down_sample: 1
+  #   seq_len: 2048
+  #   stride_len: 128
+  #   enc_in: 21
+  #   embed: timeF
+  #   num_class: 17 # 分类数
+
+
+
+

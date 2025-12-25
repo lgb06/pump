@@ -1,0 +1,67 @@
+从预训练文件夹 Pretrain_test_RmGPT_hd512_el5_en8_at8_it0 中解析配置: d_model=512, e_layers=5, expert_num=8, n_heads=8
+'Args in experiment:'
+{   'acc_it': 1,
+    'activated_expert': 4,
+    'batch_size': 8,
+    'checkpoints': 'checkpoints/',
+    'clip_grad': 5.0,
+    'codebook_size': 1024,
+    'd_model': 512,
+    'data': 'All',
+    'ddp': False,
+    'debug': 'disabled',
+    'des': 'test',
+    'device': 'cuda:0',
+    'dist_url': 'env://',
+    'dropout': 0.1,
+    'e_layers': 5,
+    'efficiency_tuning': False,
+    'expert_num': 8,
+    'extract_attention': True,
+    'fix_seed': 2024,
+    'freq': 'h',
+    'input_len': 2048,
+    'is_training': 1,
+    'itr': 1,
+    'label_type': 'local',
+    'large_model': True,
+    'layer_decay': None,
+    'learning_rate': 1e-05,
+    'local_rank': None,
+    'lora_transform': False,
+    'lradj': 'lora_tuning',
+    'memory_check': False,
+    'min_lr': None,
+    'mode_debug': False,
+    'model': 'RmGPT',
+    'model_id': 'full_lora',
+    'n_heads': 8,
+    'num_workers': 16,
+    'patch_len': 256,
+    'pretrained_weight': 'checkpoints/Pretrain_test_RmGPT_hd512_el5_en8_at8_it0/pretrain_checkpoint.pth',
+    'project_name': 'RmGPTv2-sft',
+    'stride': 256,
+    'subsample_pct': None,
+    'task_data_config_path': 'data_provider/data_config/baseline/ROT.yaml',
+    'task_name': 'sft_wo_cwru',
+    'tokenizer_path': 'checkpoints/Pretrain_Token_pretrain_Tokenizer_cs1024_it0/pretrain_checkpoint.pth',
+    'train_epochs': 10,
+    'visualize': True,
+    'visualize_output_dir': 'visualization_results',
+    'warmup_epochs': 0,
+    'weight_decay': 1e-06}
+device id cuda:0
+>>>>>>>start training : sft_wo_cwru_full_lora_RmGPT_hd512_el5_en8_at8_it0>>>>>>>>>>>>>>>>>>>>>>>>>>
+loading pretrained model: checkpoints/Pretrain_test_RmGPT_hd512_el5_en8_at8_it0/pretrain_checkpoint.pth
+Traceback (most recent call last):
+  File "/dataWYL/WYL/PHM-Large-Model/run.py", line 198, in <module>
+    exp.train(setting)
+  File "/dataWYL/WYL/PHM-Large-Model/exp/exp_sup.py", line 304, in train
+    self.load_model_from_pretrain(setting)
+  File "/dataWYL/WYL/PHM-Large-Model/exp/exp_sup.py", line 280, in load_model_from_pretrain
+    msg = self.model.load_state_dict(ckpt, strict=False)
+  File "/home/ps/anaconda3/envs/vllm/lib/python3.10/site-packages/torch/nn/modules/module.py", line 2584, in load_state_dict
+    raise RuntimeError(
+RuntimeError: Error(s) in loading state_dict for Model:
+	size mismatch for tokeninzer.patch_project.weight: copying a param with shape torch.Size([512, 128]) from checkpoint, the shape in current model is torch.Size([512, 256]).
+	size mismatch for tokeninzer.sequence_project.weight: copying a param with shape torch.Size([512, 1024]) from checkpoint, the shape in current model is torch.Size([512, 2048]).

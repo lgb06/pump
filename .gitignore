@@ -1,0 +1,7 @@
+# Ignore Rmgpt checkpoints folder
+checkpoints/
+
+# Ignore Rmgpt logs folder
+logs/
+
+checkpoints_*/
