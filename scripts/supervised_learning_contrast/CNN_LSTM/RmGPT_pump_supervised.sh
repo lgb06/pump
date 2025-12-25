@@ -31,6 +31,7 @@ python run.py \
     --model_id $full_exp_name \
     --model $model_name \
     --lradj supervised \
+    --cls_mode 0 \
     --patch_len 256 \
     --stride 256 \
     --e_layers 2 \
