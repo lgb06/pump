@@ -45,6 +45,7 @@ python run.py \
     --learning_rate 1e-6\
     --batch_size 256 \
     --checkpoints $SAVE_PATH \
+    --cls_mode 0 \
     --data $data_type     
   # --pretrained_weight 'checkpoints/ALL_task_test_RmGPT_All_ftM_dm512_el4_test_0/pretrain_checkpoint.pth'\
   # --prompt_tune_epoch 20\

@@ -28,7 +28,7 @@ PARENT_DIR_NAME=$(basename "${SCRIPT_DIR}")
 TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
 
 # 3. 定义日志文件存放的目录
-LOG_DIR="./logs/Electric/${PARENT_DIR_NAME}/" # 也可以是其他你喜欢的位置
+LOG_DIR="./logs/Electric/2cls/${PARENT_DIR_NAME}/" # 也可以是其他你喜欢的位置
 
 # 检查目录是否存在，如果不存在则创建
 if [ ! -d "$LOG_DIR" ]; then

@@ -122,7 +122,7 @@ if __name__ == '__main__':
                        help='Extract and visualize attention weights')
     
     # classes num mode
-    parser.add_argument('--cls_mode', type=int, default=0,
+    parser.add_argument('--cls_mode', type=int, default=-1,
                         help='classes num mode')
 
 
@@ -131,6 +131,7 @@ if __name__ == '__main__':
     # 专门针对NLN-EMP的映射 
     if not hasattr(args, 'num_classes'):
         cls_to_num_class_mapping = {
+            -1: 2,
             0: 21,
             1: 21,
             3: 12,

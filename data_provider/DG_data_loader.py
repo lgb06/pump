@@ -383,9 +383,10 @@ class NLNEMPloader(Dataset):
 
         return x_tensor, y_tensor
 
-    def _load_all_data(self, flag, cls_mode, modality, motor_id = "all", down_sampling_scale = 1, root_path = "/inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/bas_pump/data/NLN-EMP/Dataset"):
+    def _load_all_data(self, flag, cls_mode = -1, modality = "Vibration", motor_id = "all", down_sampling_scale = 1, root_path = "/inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/bas_pump/data/NLN-EMP/Dataset"):
         """内部函数：遍历文件并合并通道
             参数:
+        - cls_mode: 分类模式，-1表示二分类，其他值表示多分类
         - root_path: 数据集根目录路径
         - modality: 'Vibration' (振动) 或 'Electric' (电流/电压)
         - motor_id: 'Motor-2' 或 'Motor-4'
@@ -433,7 +434,7 @@ class NLNEMPloader(Dataset):
                 label_name = "coupling"
 
             # /*TODO*/  标签类别划分合并
-            if cls_mode == 0:
+            if cls_mode == -1 or cls_mode == 0:
                 # 过滤，归类数据，如healthy noise /*TODO*/
                 if label_name == "healthy noise":
                     label_name = "healthy"
@@ -494,6 +495,11 @@ class NLNEMPloader(Dataset):
         
         for key, exp_data in tqdm(experiments.items(), desc="Loading CSVs"): # key 是 unique_key
             label_idx = label_map[exp_data['label']]
+            if cls_mode == -1:
+                # 二分类
+                if label_idx != 0:
+                    label_idx = 1
+
             file_dict = exp_data['files']
             
             num_channels = 5 if modality == 'Vibration' else 6
