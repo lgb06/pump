@@ -89,6 +89,7 @@ class Model(nn.Module):
         ###
         self.do_fft = False if args.data == "electric" or args.data == "Electric" else True
         ###
+        self.do_fft = True
 
     def get_input_tokens(self, x,x_mark,task_id):
         if self.do_fft:
