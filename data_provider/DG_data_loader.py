@@ -797,6 +797,40 @@ class Normalizer(object):
         Returns:
             df: normalized dataframe
         """
+        # NumPy 路径：对序列和通道分开处理，按通道标准化，避免不同通道量纲被混合
+        if isinstance(df, np.ndarray):
+            print("执行按通道标准化")
+            eps = np.finfo(float).eps
+            # 期望形状 [N, T, C] 或 [N, C]
+            if df.ndim == 3:
+                # 在样本和时间两个维度上求每个通道的统计量
+                axes = (0, 1)
+            elif df.ndim == 2:
+                axes = (0,)
+            else:
+                raise ValueError(f"Unsupported ndarray shape for normalization: {df.shape}")
+
+            if self.norm_type == "standardization":
+                if self.mean is None:
+                    self.mean = df.mean(axis=axes)
+                    self.std = df.std(axis=axes)
+                # 维度对齐以便广播
+                mean = self.mean.reshape((1,) * (df.ndim - 1) + (-1,))
+                std = self.std.reshape((1,) * (df.ndim - 1) + (-1,))
+                return (df - mean) / (std + eps)
+
+            elif self.norm_type == "minmax":
+                if self.max_val is None:
+                    self.max_val = df.max(axis=axes)
+                    self.min_val = df.min(axis=axes)
+                min_val = self.min_val.reshape((1,) * (df.ndim - 1) + (-1,))
+                max_val = self.max_val.reshape((1,) * (df.ndim - 1) + (-1,))
+                return (df - min_val) / (max_val - min_val + eps)
+
+            else:
+                raise (NameError(f'Normalize method "{self.norm_type}" not implemented for ndarray input'))
+
+        print("执行普通的全部数据标准化")
         if self.norm_type == "standardization":
             if self.mean is None:
                 self.mean = df.mean()
