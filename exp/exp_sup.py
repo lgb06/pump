@@ -187,6 +187,9 @@ class Exp_All_Task(object):
 
         print("accumulate grad iterations: %d" % self.args.acc_it)
         print("effective batch size: %d" % eff_batch_size)
+        trainable_params = [p for p in self.model.parameters() if p.requires_grad]
+        if len(trainable_params) == 0:
+            raise ValueError("No trainable parameters found. Check tuning settings.")
         if self.args.layer_decay is not None:
             print("layer decay: %.2f" % self.args.layer_decay)
             if self.args.ddp:
@@ -200,8 +203,8 @@ class Exp_All_Task(object):
                                             )
             model_optim = optim.Adam(param_groups, lr=real_learning_rate)
         else:
-            model_optim = optim.Adam(self.model.parameters(
-            ), lr=real_learning_rate, weight_decay=self.args.weight_decay)
+            model_optim = optim.Adam(trainable_params,
+            lr=real_learning_rate, weight_decay=self.args.weight_decay)
         return model_optim
 
     def _select_criterion(self, config_list):
@@ -227,12 +230,18 @@ class Exp_All_Task(object):
 
         return criterion_list
 
-    def choose_training_parts(self, prompt_tune=False):
+    def choose_training_parts(self, prompt_tune=False, head_tune=False):
         model_param = []
         trainable_param = []
         #通过控制可训练参数的梯度来控制训练部分
         for name, param in self.model.named_parameters():
-            if prompt_tune:
+            if head_tune:
+                if any(keyword in name for keyword in ['cls_head', 'category', 'rul_head', 'global_token']):
+                    param.requires_grad = True
+                    print("head_tuning trainable:", name)
+                else:
+                    param.requires_grad = False
+            elif prompt_tune:
                 #仅仅训练网络中保存的任务参数
                 if any(keyword in name for keyword in 
                        ['rul',  'category','prompt','lora','global','cls_head']):
@@ -242,7 +251,6 @@ class Exp_All_Task(object):
                 else:
                     param.requires_grad = False
             else:
-
                 if any(keyword in name for keyword in 
                        ['quantizer']) and self.args.tokenizer_path is not None:
                     param.requires_grad = False
@@ -295,7 +303,9 @@ class Exp_All_Task(object):
     def train_parameter_choice(self):
         if self.args.lora_transform:
             self.lora_transform()
-        if self.args.efficiency_tuning:
+        if self.args.lradj == 'head_tuning':
+            self.choose_training_parts(head_tune=True)
+        elif self.args.efficiency_tuning:
             self.choose_training_parts(prompt_tune=True)
 
     def train(self, setting):
@@ -860,4 +870,3 @@ class Exp_All_Task(object):
         del extra_mem
         torch.cuda.empty_cache()
         return
-

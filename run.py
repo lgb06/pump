@@ -111,7 +111,8 @@ if __name__ == '__main__':
 
     # task related settings
     # classification task
-    parser.add_argument('--label_type', type=str,default='local',help='local or global')
+    # parser.add_argument('--label_type', type=str,default='local',help='local or global')
+    parser.add_argument('--label_type', type=str,default='global',help='local or global')
     
     # visualization analysis
     parser.add_argument('--visualize', action='store_true', default=True,

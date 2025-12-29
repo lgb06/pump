@@ -375,6 +375,8 @@ class Dataset_CWRU(Dataset_PHM):
         label = self.label_code[self.file_label[file_idx]]
         condition = torch.tensor([self.condition_code[self.file_condition[file_idx]]])
         # 将离散的标签转换为one-hot向量
+        # 二分类
+        if label != 0:  label = 1
         label = F.one_hot(torch.tensor(label), num_classes=self.num_classes)
         return data, label,condition
 
@@ -422,6 +424,8 @@ class Dataset_HUST_bearing(Dataset_PHM):
         label = self.label_code[self.file_label[file_idx]]
         condition = torch.tensor([self.condition_code[self.file_condition[file_idx]]])
         # 将离散的标签转换为one-hot向量
+        # 二分类
+        if label != 0:  label = 1
         label = F.one_hot(torch.tensor(label), num_classes=self.num_classes)
         return data, label,condition
 
@@ -463,6 +467,8 @@ class Dataset_XJTU_CLS(Dataset_PHM):
         label = self.label_code[self.file_label[file_idx]]
         condition = torch.tensor([self.condition_code[self.file_condition[file_idx]]])
         # 将离散的标签转换为one-hot向量
+        # 二分类
+        if label != 0:  label = 1
         label = F.one_hot(torch.tensor(label), num_classes=self.num_classes)
         return data, label,condition
 
@@ -500,6 +506,8 @@ class Dataset_HUST_gearbox(Dataset_PHM):
         label = self.label_code[self.file_label[file_idx]]
         condition = torch.tensor([self.condition_code[self.file_condition[file_idx]]])
         # 将离散的标签转换为one-hot向量
+        # 二分类
+        if label != 0:  label = 1
         label = F.one_hot(torch.tensor(label), num_classes=self.num_classes)
         return data, label,condition
 
@@ -536,6 +544,8 @@ class Dataset_IMS(Dataset_PHM):
         label = self.label_code[self.file_label[file_idx]]
         condition = torch.tensor([self.condition_code[self.file_condition[file_idx]]])
         # 将离散的标签转换为one-hot向量
+        # 二分类
+        if label != 0:  label = 1
         label = F.one_hot(torch.tensor(label), num_classes=self.num_classes)
         return data, label,condition
 
@@ -573,6 +583,8 @@ class Dataset_LW(Dataset_PHM):
         label = self.label_code[self.file_label[file_idx]]
         condition = torch.tensor([self.condition_code[self.file_condition[file_idx]]])
         # 将离散的标签转换为one-hot向量
+        # 二分类
+        if label != 0:  label = 1
         label = F.one_hot(torch.tensor(label), num_classes=self.num_classes)
         return data, label,condition
 
@@ -630,6 +642,8 @@ class Dataset_PU(Dataset_PHM):
         label = self.label_code[self.file_label[file_idx]]
         condition = torch.tensor([self.condition_code[self.file_condition[file_idx]]])
         # 将离散的标签转换为one-hot向量
+        # 二分类
+        if label != 0:  label = 1
         label = F.one_hot(torch.tensor(label), num_classes=self.num_classes)
         return data, label,condition
 
@@ -668,6 +682,8 @@ class Dataset_SCP(Dataset_PHM):
         label = self.label_code[self.file_label[file_idx]]
         condition = torch.tensor([self.condition_code[self.file_condition[file_idx]]])
         # 将离散的标签转换为one-hot向量
+        # 二分类
+        if label != 0:  label = 1
         label = F.one_hot(torch.tensor(label), num_classes=self.num_classes)
         return data, label,condition
 
@@ -707,6 +723,8 @@ class Dataset_JNU(Dataset_PHM):
         label = self.label_code[self.file_label[file_idx]]
         condition = torch.tensor([self.condition_code[self.file_condition[file_idx]]])
         # 将离散的标签转换为one-hot向量
+        # 二分类
+        if label != 0:  label = 1
         label = F.one_hot(torch.tensor(label), num_classes=self.num_classes)
         return data, label,condition
 
@@ -756,6 +774,8 @@ class Dataset_PHM2009(Dataset_PHM):
         label = self.label_code[self.file_label[file_idx]]
         condition = torch.tensor([self.condition_code[self.file_condition[file_idx]]])
         # 将离散的标签转换为one-hot向量
+        # 二分类
+        if label != 0:  label = 1
         label = F.one_hot(torch.tensor(label), num_classes=self.num_classes)
         return data, label,condition
 
@@ -766,7 +786,7 @@ class Dataset_QPZZ(Dataset_PHM):
         super(Dataset_QPZZ, self).__init__(root_path, args, seq_len, stride_len, flag, cross_condition,
                                            down_sampling_scale, data_path, start_percentage, end_percentage,few_shot=few_shot)
         
-        if label_type == 'local':
+        if label_type == 'local' or label_type == 'global':
             self.label_code = {
                 'normal': 0,
                 'broken': 1,
@@ -775,9 +795,9 @@ class Dataset_QPZZ(Dataset_PHM):
                 'pitting_wear': 4,
             }
             self.num_classes = len(self.label_code)
-        if label_type == 'global':
-            self.label_code = self.global_label_index
-            self.num_classes = 5
+        # if label_type == 'global':
+        #     self.label_code = self.global_label_index
+        #     self.num_classes = 5
 
     def __getitem__(self, idx: int):
 
@@ -787,6 +807,8 @@ class Dataset_QPZZ(Dataset_PHM):
         label = self.label_code[self.file_label[file_idx]]
         condition = torch.tensor([self.condition_code[self.file_condition[file_idx]]])
         # 将离散的标签转换为one-hot向量
+        # 二分类
+        if label != 0:  label = 1
         label = F.one_hot(torch.tensor(label), num_classes=self.num_classes)
         return data, label,condition
 
@@ -841,6 +863,8 @@ class Dataset_SLIET(Dataset_PHM):
         label = self.label_code[self.file_label[file_idx]]
         condition = torch.tensor([self.condition_code[self.file_condition[file_idx]]])
         # 将离散的标签转换为one-hot向量
+        # 二分类
+        if label != 0:  label = 1
         label = F.one_hot(torch.tensor(label), num_classes=self.num_classes)
         return data, label,condition
 
@@ -851,16 +875,16 @@ class Dataset_SMU(Dataset_PHM):
         super(Dataset_SMU, self).__init__(root_path, args, seq_len, stride_len, flag, cross_condition,
                                            down_sampling_scale, data_path, start_percentage, end_percentage,few_shot=few_shot)
 
-        if label_type == 'local':
+        if label_type == 'local' or label_type == 'global':
             self.label_code = {
                 'normal': 0,
                 'wear': 1,
                 'chip': 2,
             }
             self.num_classes = len(self.label_code)
-        if label_type == 'global':
-            self.label_code = self.global_label_index
-            self.num_classes = 3
+        # if label_type == 'global':
+        #     self.label_code = self.global_label_index
+        #     self.num_classes = 3
 
     def __getitem__(self, idx: int):
 
@@ -870,6 +894,8 @@ class Dataset_SMU(Dataset_PHM):
         label = self.label_code[self.file_label[file_idx]]
         condition = torch.tensor([self.condition_code[self.file_condition[file_idx]]])
         # 将离散的标签转换为one-hot向量
+        # 二分类
+        if label != 0:  label = 1
         label = F.one_hot(torch.tensor(label), num_classes=self.num_classes)
         return data, label,condition
 
@@ -907,6 +933,8 @@ class Dataset_ROT(Dataset_PHM):
         label = self.label_code[self.file_label[file_idx]]
         condition = torch.tensor([self.condition_code[self.file_condition[file_idx]]])
         # 将离散的标签转换为one-hot向量
+        # 二分类
+        if label != 0:  label = 1
         label = F.one_hot(torch.tensor(label), num_classes=self.num_classes)
         return data, label,condition
 

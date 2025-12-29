@@ -74,6 +74,8 @@ class Dataset_CWRU_DG(Dataset_PHM):
         label = self.label_code[self.file_label[file_idx]]
 
         # 将离散的标签转换为one-hot向量
+        # 二分类
+        if label != 0:  label = 1
         label = F.one_hot(torch.tensor(label), num_classes=self.num_classes)
 
         print(f"data.shape{data.shape}")
@@ -121,6 +123,8 @@ class Dataset_HUST_bearing_DG(Dataset_PHM):
         label = self.label_code[self.file_label[file_idx]]
 
         # 将离散的标签转换为one-hot向量
+        # 二分类
+        if label != 0:  label = 1
         label = F.one_hot(torch.tensor(label), num_classes=self.num_classes)
 
         return data, label,label
@@ -155,6 +159,8 @@ class Dataset_XJTU_CLS_DG(Dataset_PHM):
         label = self.label_code[self.file_label[file_idx]]
 
         # 将离散的标签转换为one-hot向量
+        # 二分类
+        if label != 0:  label = 1
         label = F.one_hot(torch.tensor(label), num_classes=self.num_classes)
 
         return data, label,label
@@ -192,6 +198,8 @@ class Dataset_IMS_DG(Dataset_PHM):
         label = self.label_code[self.file_label[file_idx]]
 
         # 将离散的标签转换为one-hot向量
+        # 二分类
+        if label != 0:  label = 1
         label = F.one_hot(torch.tensor(label), num_classes=self.num_classes)
 
         return data, label,label
@@ -230,6 +238,8 @@ class Dataset_SCP_DG(Dataset_PHM):
         label = self.label_code[self.file_label[file_idx]]
 
         # 将离散的标签转换为one-hot向量
+        # 二分类
+        if label != 0:  label = 1
         label = F.one_hot(torch.tensor(label), num_classes=self.num_classes)
 
         return data, label,label
@@ -266,6 +276,8 @@ class Dataset_JNU_DG(Dataset_PHM):
         label = self.label_code[self.file_label[file_idx]]
 
         # 将离散的标签转换为one-hot向量
+        # 二分类
+        if label != 0:  label = 1
         label = F.one_hot(torch.tensor(label), num_classes=self.num_classes)
 
         return data, label,label

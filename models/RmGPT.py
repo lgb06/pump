@@ -63,8 +63,12 @@ class Model(nn.Module):
                     print(f"category_token.shape:{category_token.shape}")
                    
                     category_token = category_token.unsqueeze(0).unsqueeze(1)  # 现在形状是 [1, 1, M, D]
-                    # category_token.repeat(1,configs_list[i][1]['enc_in'],1,1)   # [1, C, M, D]
-                    category_token.repeat(1,args.num_channels,1,1)   # [1, C, M, D]
+                    
+                    if "NLN-EMP" in args.task_data_config_path or "NLNEMP" in args.task_data_config_path:
+                        category_token.repeat(1,args.num_channels,1,1)   # [1, C, M, D]
+                    else:
+                        category_token.repeat(1,configs_list[i][1]['enc_in'],1,1)   # [1, C, M, D]
+                    
                     self.category_token[task_data_name]= nn.Parameter(category_token)
                 if 'RUL' in configs_list[i][1]['task_name']:
                     self.rul_head[task_data_name] = nn.Linear(args.d_model*configs_list[i][1]['enc_in'],
@@ -87,7 +91,7 @@ class Model(nn.Module):
         self.debug = args.mode_debug
 
         ###
-        self.do_fft = False if args.data == "electric" or args.data == "Electric" else True
+        # self.do_fft = False if args.data == "electric" or args.data == "Electric" else True
         ###
         self.do_fft = True
 
