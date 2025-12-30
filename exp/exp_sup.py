@@ -326,7 +326,7 @@ class Exp_All_Task(object):
         self.load_model_from_pretrain(setting)
         self.train_parameter_choice()
         # Data
-        _, train_loader_list = self._get_data(flag='train')
+        train_data_list, train_loader_list = self._get_data(flag='train')
         # Since some datasets do not have val set, we use test set and report the performance of last epoch instead of the best epoch.
         test_data_list, test_loader_list = self._get_data(
             flag='test')
@@ -353,6 +353,9 @@ class Exp_All_Task(object):
                 model_optim, data_loader_cycle, criterion_list, epoch, train_steps, scaler)
 
             # we report the results of last epoch and not find the best epoch based on val set, since some datasets do not have val set
+            avg_cls_acc_traindata, _ , _ = self.test(
+                setting, load_pretrain=False, test_data_list=train_data_list, test_loader_list=train_loader_list)
+            
             avg_cls_acc, avg_forecast_mse, avg_forecast_mae = self.test(
                 setting, load_pretrain=False, test_data_list=test_data_list, test_loader_list=test_loader_list)
 
@@ -365,7 +368,9 @@ class Exp_All_Task(object):
             if is_main_process():
                 # wandb.log({'Final_LF-mse': avg_forecast_mse,
                 #            'Final_LF-mae': avg_forecast_mae, 'Final_CLS-acc': avg_cls_acc})
-                print("Final score: LF-mse: {}, LF-mae: {}, CLS-acc {}".format(avg_forecast_mse,
+                print("For training data score: LF-mse: {}, LF-mae: {}, CLS-acc {}".format(avg_forecast_mse,
+                                                                               avg_forecast_mae, avg_cls_acc_traindata), folder=self.path)
+                print("Final testing data score: LF-mse: {}, LF-mae: {}, CLS-acc {}".format(avg_forecast_mse,
                                                                                avg_forecast_mae, avg_cls_acc), folder=self.path)
                 # Store validation accuracy
                 for task_id, (test_data, test_loader) in enumerate(zip(test_data_list, test_loader_list)):
