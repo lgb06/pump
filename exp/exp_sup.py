@@ -119,6 +119,10 @@ class Exp_All_Task(object):
         self.args = args
         self.task_data_config = read_task_data_config(
             self.args.task_data_config_path)
+        #
+        # self.test_task_data_config = read_task_data_config(
+        #     "data_provider/data_config/pump/NLNEMP.yaml" )
+        # #        
         self.task_data_config_list = get_task_data_config_list(
             self.task_data_config, default_batch_size=self.args.batch_size)
         if args.ddp:
@@ -156,7 +160,13 @@ class Exp_All_Task(object):
 
     def _get_data(self, flag):
         ddp = self.args.ddp
+
+        # 不可以，因为args也会影响数据集读取 /*TODO*/
+        # if flag == 'test':
+        #     this_task_data_config = self.test_task_data_config
+        # else:
         this_task_data_config = self.task_data_config
+        #
             
         data_set_list = []
         data_loader_list = []
@@ -485,7 +495,10 @@ class Exp_All_Task(object):
             if outputs.shape[0] == label.shape[0]:
                 # loss = criterion(outputs, label.float().squeeze(-1)) 
                 # ERROR? NotImplementedError: "nll_loss_forward_reduce_cuda_kernel_2d_index" not implemented for 'Float'    //NLLLoss 期望的输入是 对数概率，而它期望的 目标（标签） 通常是 类索引（整数类型），而不是浮点数
+                print(f"------------------dataset_name:{config['dataset_name']}------------output:{outputs}")
+                print(f"------------------------------output:{outputs.shape}")
                 loss = criterion(outputs, label.float().squeeze(-1))
+                # 为什么不同数据输出的形状还不一样?？？？？？
             else:
                 label = label.repeat(outputs.shape[0]//label.shape[0], 1)
                 loss = criterion(outputs, label.float().squeeze(-1))
