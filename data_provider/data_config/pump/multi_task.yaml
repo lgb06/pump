@@ -17,158 +17,156 @@ task_dataset:
 
 
 
-#   PHM_CWRU:
-#     task_name: classification_PHM
-#     dataset_name: CWRU
-#     dataset: CWRU
-#     data: CWRU
-#     root_path: /inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/bas_pump/data/PHM_dataset/CWRU
-#     label_type: 'global' # 标签映射方式：默认为global，即本地映射；若为global，则为全局映射
-#     down_sample: 1 # 降采样系数
-#     seq_len: 2048 # 输入序列长度
-#     stride_len: 64 # 滑动窗口步长
-#     enc_in: 3 # 通道数（不需要传入dataset）
-#     embed: timeF # 时序特征（为了符合units的data_provider框架）
-#     num_class: 16 # 分类数
-#     num_condition: 4
-#   PHM_QPZZ:
-#     task_name: classification_PHM
-#     dataset_name: QPZZ
-#     dataset: QPZZ
-#     data: QPZZ
-#     root_path: /inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/bas_pump/data/PHM_dataset/QPZZ
-#     label_type: 'global' # 标签映射方式：默认为global，即本地映射；若为global，则为全局映射
-#     down_sample: 1
-#     seq_len: 2048
-#     stride_len: 8
-#     enc_in: 9
-#     embed: timeF
-#     num_class: 5 # 分类数
-#     num_condition: 4
+  PHM_CWRU:
+    task_name: classification_PHM
+    dataset_name: CWRU
+    dataset: CWRU
+    data: CWRU
+    root_path: /inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/bas_pump/data/PHM_dataset/CWRU
+    label_type: 'global' # 标签映射方式：默认为global，即本地映射；若为global，则为全局映射
+    down_sample: 1 # 降采样系数
+    seq_len: 2048 # 输入序列长度
+    stride_len: 64 # 滑动窗口步长
+    enc_in: 3 # 通道数（不需要传入dataset）
+    embed: timeF # 时序特征（为了符合units的data_provider框架）
+    num_class: 16 # 分类数
+    num_condition: 4
+  PHM_QPZZ:
+    task_name: classification_PHM
+    dataset_name: QPZZ
+    dataset: QPZZ
+    data: QPZZ
+    root_path: /inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/bas_pump/data/PHM_dataset/QPZZ
+    label_type: 'global' # 标签映射方式：默认为global，即本地映射；若为global，则为全局映射
+    down_sample: 1
+    seq_len: 2048
+    stride_len: 8
+    enc_in: 9
+    embed: timeF
+    num_class: 5 # 分类数
+    num_condition: 4
 
-#   PHM_SLIET:
-#     task_name: classification_PHM
-#     dataset_name: SLIET
-#     dataset: SLIET
-#     data: SLIET
-#     root_path: /inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/bas_pump/data/PHM_dataset/SLIET
-#     label_type: 'global' # 标签映射方式：默认为global，即本地映射；若为global，则为全局映射
-#     down_sample: 1
-#     seq_len: 2048
-#     stride_len: 128
-#     enc_in: 3
-#     embed: timeF
-#     num_class: 13 # 分类数 (备注：数据集文件更新了，分类数也变了)
-#     num_condition: 1
+  PHM_SLIET:
+    task_name: classification_PHM
+    dataset_name: SLIET
+    dataset: SLIET
+    data: SLIET
+    root_path: /inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/bas_pump/data/PHM_dataset/SLIET
+    label_type: 'global' # 标签映射方式：默认为global，即本地映射；若为global，则为全局映射
+    down_sample: 1
+    seq_len: 2048
+    stride_len: 128
+    enc_in: 3
+    embed: timeF
+    num_class: 13 # 分类数 (备注：数据集文件更新了，分类数也变了)
+    num_condition: 1
 
-#   # /*TODO*/
-#   # PHM_SMU:
-#   #   task_name: classification_PHM
-#   #   dataset_name: SMU
-#   #   dataset: SMU
-#   #   data: SMU
-#   #   root_path: /inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/bas_pump/data/PHM_dataset/SMU
-#   #   label_type: 'global' # 标签映射方式：默认为global，即本地映射；若为global，则为全局映射
-#   #   down_sample: 1  
-#   #   seq_len: 2048
-#   #   stride_len: 2
-#   #   enc_in: 1
-#   #   embed: timeF
-#   #   num_class: 3 # 分类数
-#   #   num_condition: 1
-
-
-#   # PHM_HUST_gearbox:
-#   #   task_name: classification_PHM
-#   #   dataset_name: HUST_gearbox
-#   #   dataset: HUST_gearbox
-#   #   data: HUST_gearbox
-#   #   root_path: /inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/bas_pump/data/PHM_dataset/HUST_gearbox
-#   #   label_type: 'global' # 标签映射方式：默认为global，即本地映射；若为global，则为全局映射
-#   #   down_sample: 1
-#   #   seq_len: 2048
-#   #   stride_len: 128
-#   #   enc_in: 4
-#   #   embed: timeF
-#   #   num_class: 3
-#   #   num_condition: 4
-
-#   # PHM_HUST_bearing:
-#   #   task_name: classification_PHM
-#   #   dataset_name: HUST_bearing
-#   #   dataset: HUST_bearing
-#   #   data: HUST_bearing
-#   #   root_path: /inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/bas_pump/data/PHM_dataset/HUST_bearing
-#   #   label_type: 'global' # 标签映射方式：默认为global，即本地映射；若为global，则为全局映射
-#   #   down_sample: 1
-#   #   seq_len: 2048
-#   #   stride_len: 64
-#   #   enc_in: 4
-#   #   embed: timeF
-#   #   num_class: 9
-#   #   num_condition: 4
+  PHM_SMU:
+    task_name: classification_PHM
+    dataset_name: SMU
+    dataset: SMU
+    data: SMU
+    root_path: /inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/bas_pump/data/PHM_dataset/SMU
+    label_type: 'global' # 标签映射方式：默认为global，即本地映射；若为global，则为全局映射
+    down_sample: 1  
+    seq_len: 2048
+    stride_len: 2
+    enc_in: 1
+    embed: timeF
+    num_class: 3 # 分类数
+    num_condition: 1
 
 
-#   PHM_IMS:
-#     task_name: classification_PHM
-#     dataset_name: IMS
-#     dataset: IMS
-#     data: IMS
-#     root_path: /inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/bas_pump/data/PHM_dataset/IMS
-#     down_sample: 1
-#     seq_len: 2048
-#     stride_len:  256
-#     label_type: 'global' # 标签映射方式：默认为global，即本地映射；若为global，则为全局映射
-#     enc_in: 3
-#     embed: timeF
-#     num_class: 3
-#     num_condition: 1
+  # PHM_HUST_gearbox:
+  #   task_name: classification_PHM
+  #   dataset_name: HUST_gearbox
+  #   dataset: HUST_gearbox
+  #   data: HUST_gearbox
+  #   root_path: /inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/bas_pump/data/PHM_dataset/HUST_gearbox
+  #   label_type: 'global' # 标签映射方式：默认为global，即本地映射；若为global，则为全局映射
+  #   down_sample: 1
+  #   seq_len: 2048
+  #   stride_len: 128
+  #   enc_in: 4
+  #   embed: timeF
+  #   num_class: 3
+  #   num_condition: 4
 
-#   # /*TODO*/
-#   # PHM_SCP:
-#   #   task_name: classification_PHM
-#   #   dataset_name: SCP
-#   #   dataset: SCP
-#   #   data: SCP
-#   #   root_path: /inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/bas_pump/data/PHM_dataset/SCP
-#   #   down_sample: 1
-#   #   seq_len: 2048
-#   #   stride_len: 2
-#   #   enc_in: 1
-#   #   embed: timeF
-#   #   num_class: 3
-#   #   label_type: 'global' # 标签映射方式：默认为global，即本地映射；若为global，则为全局映射
-#   #   num_condition: 1
+  # PHM_HUST_bearing:
+  #   task_name: classification_PHM
+  #   dataset_name: HUST_bearing
+  #   dataset: HUST_bearing
+  #   data: HUST_bearing
+  #   root_path: /inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/bas_pump/data/PHM_dataset/HUST_bearing
+  #   label_type: 'global' # 标签映射方式：默认为global，即本地映射；若为global，则为全局映射
+  #   down_sample: 1
+  #   seq_len: 2048
+  #   stride_len: 64
+  #   enc_in: 4
+  #   embed: timeF
+  #   num_class: 9
+  #   num_condition: 4
 
-#   # PHM_PU:
-#   #   task_name: classification_PHM
-#   #   dataset_name: PU
-#   #   dataset: PU
-#   #   data: PU
-#   #   root_path: /inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/bas_pump/data/PHM_dataset/PU
-#   #   down_sample: 1
-#   #   seq_len: 2048
-#   #   stride_len: 2048
-#   #   enc_in: 1
-#   #   embed: timeF
-#   #   num_class: 12
-#   #   label_type: 'global' # 标签映射方式：默认为global，即本地映射；若为global，则为全局映射
-#   #   num_condition: 4
 
-#   PHM_LW:
-#     task_name: classification_PHM
-#     dataset_name: LW
-#     dataset: LW
-#     data: LW
-#     root_path: /inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/bas_pump/data/PHM_dataset/LW
-#     down_sample: 1
-#     seq_len: 2048
-#     stride_len: 8
-#     enc_in: 9
-#     embed: timeF
-#     num_class: 4
-#     label_type: 'global' # 标签映射方式：默认为global，即本地映射；若为global，则为全局映射
-#     num_condition: 4
+  PHM_IMS:
+    task_name: classification_PHM
+    dataset_name: IMS
+    dataset: IMS
+    data: IMS
+    root_path: /inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/bas_pump/data/PHM_dataset/IMS
+    down_sample: 1
+    seq_len: 2048
+    stride_len:  256
+    label_type: 'global' # 标签映射方式：默认为global，即本地映射；若为global，则为全局映射
+    enc_in: 3
+    embed: timeF
+    num_class: 3
+    num_condition: 1
+
+  PHM_SCP:
+    task_name: classification_PHM
+    dataset_name: SCP
+    dataset: SCP
+    data: SCP
+    root_path: /inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/bas_pump/data/PHM_dataset/SCP
+    down_sample: 1
+    seq_len: 2048
+    stride_len: 2
+    enc_in: 1
+    embed: timeF
+    num_class: 3
+    label_type: 'global' # 标签映射方式：默认为global，即本地映射；若为global，则为全局映射
+    num_condition: 1
+
+  # PHM_PU:
+  #   task_name: classification_PHM
+  #   dataset_name: PU
+  #   dataset: PU
+  #   data: PU
+  #   root_path: /inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/bas_pump/data/PHM_dataset/PU
+  #   down_sample: 1
+  #   seq_len: 2048
+  #   stride_len: 2048
+  #   enc_in: 1
+  #   embed: timeF
+  #   num_class: 12
+  #   label_type: 'global' # 标签映射方式：默认为global，即本地映射；若为global，则为全局映射
+  #   num_condition: 4
+
+  PHM_LW:
+    task_name: classification_PHM
+    dataset_name: LW
+    dataset: LW
+    data: LW
+    root_path: /inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/bas_pump/data/PHM_dataset/LW
+    down_sample: 1
+    seq_len: 2048
+    stride_len: 8
+    enc_in: 9
+    embed: timeF
+    num_class: 4
+    label_type: 'global' # 标签映射方式：默认为global，即本地映射；若为global，则为全局映射
+    num_condition: 4
 
   PHM_JNU:
     task_name: classification_PHM

@@ -41,7 +41,7 @@ python run.py \
     --debug $wandb_mode \
     --project_name $ptune_name \
     --task_data_config_path  data_provider/data_config/pump/multi_task.yaml \
-    --learning_rate 1e-5\
+    --learning_rate 3e-3\
     --batch_size 256 \
     --checkpoints $SAVE_PATH \
     --pretrained_weight '/inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/rmgpt_pump/rmgpt/checkpoints_pretrain/Base_RmGPT2_pretrain_x512_RmGPT_hd512_el4_en8_at16_it0/pretrain_checkpoint.pth'\
