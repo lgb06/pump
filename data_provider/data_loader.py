@@ -377,7 +377,7 @@ class Dataset_CWRU(Dataset_PHM):
         # 将离散的标签转换为one-hot向量
         # 二分类
         if label != 0:  label = 1
-        label = F.one_hot(torch.tensor(label), num_classes=self.num_classes)
+        label = F.one_hot(torch.tensor(label), num_classes=2)
         return data, label,condition
 
 class Dataset_HUST_bearing(Dataset_PHM):
@@ -426,7 +426,7 @@ class Dataset_HUST_bearing(Dataset_PHM):
         # 将离散的标签转换为one-hot向量
         # 二分类
         if label != 0:  label = 1
-        label = F.one_hot(torch.tensor(label), num_classes=self.num_classes)
+        label = F.one_hot(torch.tensor(label), num_classes=2)
         return data, label,condition
 
 class Dataset_XJTU_CLS(Dataset_PHM):
@@ -469,7 +469,7 @@ class Dataset_XJTU_CLS(Dataset_PHM):
         # 将离散的标签转换为one-hot向量
         # 二分类
         if label != 0:  label = 1
-        label = F.one_hot(torch.tensor(label), num_classes=self.num_classes)
+        label = F.one_hot(torch.tensor(label), num_classes=2)
         return data, label,condition
 
 
@@ -508,7 +508,7 @@ class Dataset_HUST_gearbox(Dataset_PHM):
         # 将离散的标签转换为one-hot向量
         # 二分类
         if label != 0:  label = 1
-        label = F.one_hot(torch.tensor(label), num_classes=self.num_classes)
+        label = F.one_hot(torch.tensor(label), num_classes=2)
         return data, label,condition
 
 
@@ -546,7 +546,7 @@ class Dataset_IMS(Dataset_PHM):
         # 将离散的标签转换为one-hot向量
         # 二分类
         if label != 0:  label = 1
-        label = F.one_hot(torch.tensor(label), num_classes=self.num_classes)
+        label = F.one_hot(torch.tensor(label), num_classes=2)
         return data, label,condition
 
 class Dataset_LW(Dataset_PHM):
@@ -585,7 +585,7 @@ class Dataset_LW(Dataset_PHM):
         # 将离散的标签转换为one-hot向量
         # 二分类
         if label != 0:  label = 1
-        label = F.one_hot(torch.tensor(label), num_classes=self.num_classes)
+        label = F.one_hot(torch.tensor(label), num_classes=2)
         return data, label,condition
 
 
@@ -644,7 +644,7 @@ class Dataset_PU(Dataset_PHM):
         # 将离散的标签转换为one-hot向量
         # 二分类
         if label != 0:  label = 1
-        label = F.one_hot(torch.tensor(label), num_classes=self.num_classes)
+        label = F.one_hot(torch.tensor(label), num_classes=2)
         return data, label,condition
 
 
@@ -684,7 +684,7 @@ class Dataset_SCP(Dataset_PHM):
         # 将离散的标签转换为one-hot向量
         # 二分类
         if label != 0:  label = 1
-        label = F.one_hot(torch.tensor(label), num_classes=self.num_classes)
+        label = F.one_hot(torch.tensor(label), num_classes=2)
         return data, label,condition
 
 
@@ -725,7 +725,7 @@ class Dataset_JNU(Dataset_PHM):
         # 将离散的标签转换为one-hot向量
         # 二分类
         if label != 0:  label = 1
-        label = F.one_hot(torch.tensor(label), num_classes=self.num_classes)
+        label = F.one_hot(torch.tensor(label), num_classes=2)
         return data, label,condition
 
     
@@ -776,7 +776,7 @@ class Dataset_PHM2009(Dataset_PHM):
         # 将离散的标签转换为one-hot向量
         # 二分类
         if label != 0:  label = 1
-        label = F.one_hot(torch.tensor(label), num_classes=self.num_classes)
+        label = F.one_hot(torch.tensor(label), num_classes=2)
         return data, label,condition
 
 
@@ -809,7 +809,7 @@ class Dataset_QPZZ(Dataset_PHM):
         # 将离散的标签转换为one-hot向量
         # 二分类
         if label != 0:  label = 1
-        label = F.one_hot(torch.tensor(label), num_classes=self.num_classes)
+        label = F.one_hot(torch.tensor(label), num_classes=2)
         return data, label,condition
 
     
@@ -865,7 +865,7 @@ class Dataset_SLIET(Dataset_PHM):
         # 将离散的标签转换为one-hot向量
         # 二分类
         if label != 0:  label = 1
-        label = F.one_hot(torch.tensor(label), num_classes=self.num_classes)
+        label = F.one_hot(torch.tensor(label), num_classes=2)
         return data, label,condition
 
     
@@ -896,7 +896,7 @@ class Dataset_SMU(Dataset_PHM):
         # 将离散的标签转换为one-hot向量
         # 二分类
         if label != 0:  label = 1
-        label = F.one_hot(torch.tensor(label), num_classes=self.num_classes)
+        label = F.one_hot(torch.tensor(label), num_classes=2)
         return data, label,condition
 
 
@@ -935,7 +935,7 @@ class Dataset_ROT(Dataset_PHM):
         # 将离散的标签转换为one-hot向量
         # 二分类
         if label != 0:  label = 1
-        label = F.one_hot(torch.tensor(label), num_classes=self.num_classes)
+        label = F.one_hot(torch.tensor(label), num_classes=2)
         return data, label,condition
 
 
