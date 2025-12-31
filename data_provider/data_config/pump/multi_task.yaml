@@ -1,19 +1,19 @@
-# task_dataset:
+task_dataset:
 
-#   # NLN-EMP:
-#   #   task_name: classification_PHM
-#   #   dataset_name: NLNEMP
-#   #   dataset: NLNEMP
-#   #   data: NLNEMP
-#   #   root_path: /inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/bas_pump/data/NLN-EMP/Dataset
-#   #   label_type: 'global' # 标签映射方式：默认为global，即本地映射；若为global，则为全局映射
-#   #   down_sample: 1 # 降采样系数
-#   #   seq_len: 2048 # 输入序列长度
-#   #   stride_len: 2048 # 滑动窗口步长
-#   #   # enc_in: 5 # 通道数（不需要传入dataset）??? 那需要传入模型？作为参数？ 在run.py中专门针对NLN-EMP的映射 
-#   #   embed: timeF # 时序特征（为了符合units的data_provider框架） ? 
-#   #   # num_class: 21 # 分类数 ?  在run.py中专门针对NLN-EMP的映射 
-#   #   num_condition: 4  # ?
+  # NLN-EMP:
+  #   task_name: classification_PHM
+  #   dataset_name: NLNEMP
+  #   dataset: NLNEMP
+  #   data: NLNEMP
+  #   root_path: /inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/bas_pump/data/NLN-EMP/Dataset
+  #   label_type: 'global' # 标签映射方式：默认为global，即本地映射；若为global，则为全局映射
+  #   down_sample: 1 # 降采样系数
+  #   seq_len: 2048 # 输入序列长度
+  #   stride_len: 2048 # 滑动窗口步长
+  #   # enc_in: 5 # 通道数（不需要传入dataset）??? 那需要传入模型？作为参数？ 在run.py中专门针对NLN-EMP的映射 
+  #   embed: timeF # 时序特征（为了符合units的data_provider框架） ? 
+  #   # num_class: 21 # 分类数 ?  在run.py中专门针对NLN-EMP的映射 
+  #   num_condition: 4  # ?
 
 
 
