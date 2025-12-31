@@ -10,7 +10,7 @@ else
   SAVE_PATH="./checkpoints/2cls/"
 fi
 
-export CUDA_VISIBLE_DEVICES=2
+export CUDA_VISIBLE_DEVICES=3
 
 model_name=RmGPT
 exp_name=pump21
@@ -32,7 +32,7 @@ python run.py \
     --lradj supervised \
     --patch_len 256 \
     --stride 256 \
-    --e_layers 8 \
+    --e_layers 4 \
     --d_model $d_model \
     --des 'Exp' \
     --itr 1 \

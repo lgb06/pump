@@ -32,7 +32,7 @@ python run.py \
     --lradj supervised \
     --patch_len 256 \
     --stride 256 \
-    --e_layers 8 \
+    --e_layers 4 \
     --d_model $d_model \
     --des 'Exp' \
     --itr 1 \
