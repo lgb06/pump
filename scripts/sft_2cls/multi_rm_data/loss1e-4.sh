@@ -10,7 +10,7 @@ else
   SAVE_PATH="./checkpoints_sft_2cls/"
 fi
 
-export CUDA_VISIBLE_DEVICES=2
+export CUDA_VISIBLE_DEVICES=1
 
 model_name=RmGPT
 exp_name=multi_rm
@@ -49,6 +49,7 @@ python run.py \
   # --prompt_num 10 \
 
 
+PRETRAINED_WEIGHT_PATH="${SAVE_PATH}sft_wo_cwru_${full_exp_name}_RmGPT_hd512_el4_en8_at16_it0/checkpoint.pth"
 #  test on nln-emp
 python run.py \
     --is_training 0 \
@@ -67,10 +68,12 @@ python run.py \
     --project_name $ptune_name \
     --task_data_config_path  data_provider/data_config/pump/NLNEMP.yaml \
     --batch_size 256 \
-    --pretrained_weight $SAVE_PATH \
+    --checkpoints $SAVE_PATH \
+    --pretrained_weight $PRETRAINED_WEIGHT_PATH \
     
   # --prompt_tune_epoch 20\
   # --prompt_num 10 \
+### --checkpoints $SAVE_PATH \ # output file地址
 
 
 
