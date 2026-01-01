@@ -50,26 +50,35 @@ class Model(nn.Module):
             self.DG = True
         else:
             self.category_head = nn.ModuleDict({})
-            self.category_token = nn.ParameterDict({})
+            # self.category_token = nn.ParameterDict({})
+            self.category_token = None
             self.rul_head = nn.ModuleDict({})  
             self.DG = False
             for i in range(self.num_task):
                 task_data_name = configs_list[i][0]
                 if 'classification'  in configs_list[i][1]['task_name']:
-                    # args.num_classes 针对NLN-EMP
-                    category_token = initialize_high_dimensional_space(args.num_classes,args.d_model) #[M,D]
-                    # category_token = initialize_high_dimensional_space(configs_list[i][1]['num_class'],args.d_model) #[M,D]       configs_list[i][1]['num_class']目的是为了多个数据集混合训
+                    if self.category_token is None:
+                        shared_category_token = initialize_high_dimensional_space(args.num_classes,args.d_model) #[M,D]
+                        shared_category_token = shared_category_token.unsqueeze(0).unsqueeze(1)  # 现在形状是[1, 1, M, D]
+                        if "NLN-EMP" in args.task_data_config_path or "NLNEMP" in args.task_data_config_path:
+                            shared_category_token.repeat(1,args.num_channels,1,1)   # [1, C, M, D]
+                        else:
+                            shared_category_token.repeat(1,configs_list[i][1]['enc_in'],1,1)   # [1, C, M, D]
+                        self.category_token = nn.Parameter(shared_category_token)  # Shared across classification tasks
+                    # # args.num_classes 针对NLN-EMP
+                    # category_token = initialize_high_dimensional_space(args.num_classes,args.d_model) #[M,D]
+                    # # category_token = initialize_high_dimensional_space(configs_list[i][1]['num_class'],args.d_model) #[M,D]       configs_list[i][1]['num_class']目的是为了多个数据集混合训
 
-                    print(f"category_token.shape:{category_token.shape}")
+                    # print(f"category_token.shape:{category_token.shape}")
                    
-                    category_token = category_token.unsqueeze(0).unsqueeze(1)  # 现在形状是 [1, 1, M, D]
+                    # category_token = category_token.unsqueeze(0).unsqueeze(1)  # 现在形状是 [1, 1, M, D]
                     
-                    if "NLN-EMP" in args.task_data_config_path or "NLNEMP" in args.task_data_config_path:
-                        category_token.repeat(1,args.num_channels,1,1)   # [1, C, M, D]
-                    else:
-                        category_token.repeat(1,configs_list[i][1]['enc_in'],1,1)   # [1, C, M, D]
+                    # if "NLN-EMP" in args.task_data_config_path or "NLNEMP" in args.task_data_config_path:
+                    #     category_token.repeat(1,args.num_channels,1,1)   # [1, C, M, D]
+                    # else:
+                    #     category_token.repeat(1,configs_list[i][1]['enc_in'],1,1)   # [1, C, M, D]
                     
-                    self.category_token[task_data_name]= nn.Parameter(category_token)
+                    # self.category_token[task_data_name]= nn.Parameter(category_token)
                 if 'RUL' in configs_list[i][1]['task_name']:
                     self.rul_head[task_data_name] = nn.Linear(args.d_model*configs_list[i][1]['enc_in'],
                                                                     1)
@@ -195,7 +204,10 @@ class Model(nn.Module):
         if self.DG:
             category_token = self.global_token
         else:
-            category_token = self.category_token[self.configs_list[task_id][0]] #[1,V,M,D]
+            # category_token = self.category_token[self.configs_list[task_id][0]] #[1,V,M,D]
+            category_token = self.category_token  # Shared across all classification tasks
+            if category_token is None:
+                raise ValueError("Shared category_token is not initialized.")
         cls_token = self.cls_head(cls_token)
 
         # 将 cls_token 从 [B, V, C] 调整为 [B, V, 1, D]
