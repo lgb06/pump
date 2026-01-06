@@ -3,7 +3,7 @@ import torch
 from exp.exp_pretrain import Exp_All_Task as Exp_All_Task_SSL
 import random
 import numpy as np
-import wandb
+# import wandb
 from utils.ddp import is_main_process, init_distributed_mode
 from pprint import pprint
 from pprint import pformat
@@ -21,6 +21,8 @@ if __name__ == '__main__':
                         help='model name')
     parser.add_argument('--label_type', type=str, default='local',
                         help='label type')
+    parser.add_argument('--project_name', type=str, default='RmGPT2_pretrain',
+                        help='wandb project name')
     # data loader
     parser.add_argument('--data', type=str, required=False,
                         default='All', help='dataset type')
@@ -36,6 +38,12 @@ if __name__ == '__main__':
                         default=None, help='subsample percent')
     parser.add_argument("--patch_len", type=int, default=256)
     parser.add_argument("--stride", type=int, default=256)
+    parser.add_argument('--cls_mode', type=int, default=-1,
+                        help='class split mode for NLN-EMP')
+    parser.add_argument('--num_classes', type=int, default=None,
+                        help='number of classes for classification datasets')
+    parser.add_argument('--num_channels', type=int, default=None,
+                        help='channel count for NLN-EMP')
 
     #device
     parser.add_argument('--device', type=str, default='cuda:1', help='device')
@@ -110,6 +118,22 @@ if __name__ == '__main__':
 
 
     args = parser.parse_args()
+    if args.num_classes is None:
+        cls_to_num_class_mapping = {
+            -1: 2,
+            0: 21,
+            1: 21,
+            3: 12,
+            11: 6,
+            12: 7,
+            13: 8,
+        }
+        args.num_classes = cls_to_num_class_mapping.get(args.cls_mode, 2)
+    if args.num_channels is None:
+        args.num_channels = 5
+        if isinstance(args.data, str) and args.data.lower() == 'electric':
+            args.num_channels = 6
+
     if args.ddp:
         init_distributed_mode(args)
     # 如果是主进程
@@ -129,16 +153,16 @@ if __name__ == '__main__':
             )
 
     if is_main_process():
-        wandb.login(key='7c05777e3b354a6cc5956d04e1b3a1cda2a16be0')
-        wandb.init(
-            name=exp_name,
-            # set the wandb project where this run will be logged
-            project="RmGPT2_pretrain",
-            # track hyperparameters and run metadata
-            config=args,
-            mode=args.wandb_debug,
+        # wandb.login(key='7c05777e3b354a6cc5956d04e1b3a1cda2a16be0')
+        # wandb.init(
+        #     name=exp_name,
+        #     # set the wandb project where this run will be logged
+        #     project=args.project_name,
+        #     # track hyperparameters and run metadata
+        #     config=args,
+        #     mode=args.wandb_debug,
         
-        )
+        # )
         pprint('Args in experiment:')
         print(pformat(vars(args), indent=4))    
     Exp = Exp_All_Task_SSL

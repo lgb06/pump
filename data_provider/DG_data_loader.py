@@ -290,7 +290,7 @@ class Dataset_JNU_DG(Dataset_PHM):
 
 # /*TODO*/
 class NLNEMPloader(Dataset):
-    def __init__(self, args, root_path, seq_len=1024, stride_len=1024, down_sampling_scale=1, label_type='local', flag=None, modality='Vibration', motor_id='all', normalize=True, transform=None):
+    def __init__(self, root_path, args, seq_len=1024, stride_len=1024, down_sampling_scale=1, label_type='local', flag=None, modality='Vibration', motor_id='all', normalize=True, transform=None):
 
                  # /*TODO*/ flag 区分测试与训练
         """

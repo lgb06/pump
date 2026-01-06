@@ -1,4 +1,19 @@
 task_dataset:
+  NLN-EMP:
+    task_name: pretrain_PHM
+    dataset_name: NLNEMP
+    dataset: NLNEMP
+    data: NLNEMP
+    root_path: /inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/bas_pump/data/NLN-EMP/Dataset
+    label_type: 'local'
+    down_sample: 1
+    seq_len: 2048
+    stride_len: 2048
+    enc_in: 5
+    embed: timeF
+    num_class: 2
+    num_condition: 4
+    
   PHM_CWRU:
     task_name: pretrain_PHM
     dataset_name: CWRU
@@ -13,7 +28,7 @@ task_dataset:
     embed: timeF # 时序特征（为了符合units的data_provider框架）
     num_class: 16 # 分类数
     num_condition: 4
-    
+        
   PHM_RUL_XJTU:
     task_name: pretrain_PHM
     dataset_name: RUL_XJTU
