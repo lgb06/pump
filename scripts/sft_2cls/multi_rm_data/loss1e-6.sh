@@ -44,30 +44,9 @@ python run.py \
     --learning_rate 1e-6\
     --batch_size 256 \
     --checkpoints $SAVE_PATH \
-    --pretrained_weight '/inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/rmgpt_pump/rmgpt/checkpoints_pretrain/Base_RmGPT2_pretrain_x512_R9_hd512_el4_en8_at16_it0/pretrain_checkpoint.pth'\
+    --pretrained_weight '/inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/rmgpt_pump/rmgpt/checkpoints_pretrain/Base_RmGPT2_pretrain_x512_RmGPT_hd512_el4_en8_at16_it0/pretrain_checkpoint.pth'\
   # --prompt_tune_epoch 20\
   # --prompt_num 10 \
-
-
-#  test on nln-emp
-python run.py \
-    --is_training 0 \
-    --model_id $full_exp_name \
-    --model $model_name \
-    --lradj head_tuning \
-    --patch_len 256 \
-    --stride 256 \
-    --e_layers 4 \
-    --d_model $d_model \
-    --des 'Exp' \
-    --itr 1 \
-    --weight_decay 0 \
-    --train_epochs 20 \
-    --debug $wandb_mode \
-    --project_name $ptune_name \
-    --task_data_config_path  data_provider/data_config/pump/NLNEMP.yaml \
-    --batch_size 256 \
-    --pretrained_weight $SAVE_PATH \
 
 
 PRETRAINED_WEIGHT_PATH="${SAVE_PATH}sft_wo_cwru_${full_exp_name}_RmGPT_hd512_el4_en8_at16_it0/checkpoint.pth"
@@ -95,7 +74,6 @@ python run.py \
   # --prompt_tune_epoch 20\
   # --prompt_num 10 \
 ### --checkpoints $SAVE_PATH \ # output file地址
-
 
     
 # # Supervised learning
