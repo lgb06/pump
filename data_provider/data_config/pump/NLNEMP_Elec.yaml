@@ -2,9 +2,9 @@ task_dataset:
 
   NLN-EMP:
     task_name: classification_PHM
-    dataset_name: NLNEMP_Vib
-    dataset: NLNEMP_Vib
-    data: NLNEMP_Vib
+    dataset_name: NLNEMP_Elec
+    dataset: NLNEMP_Elec
+    data: NLNEMP_Elec
     root_path: /inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/bas_pump/data/NLN-EMP/Dataset
     label_type: 'local' # 标签映射方式：默认为local，即本地映射；若为global，则为全局映射
     down_sample: 1 # 降采样系数
