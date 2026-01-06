@@ -7,7 +7,7 @@ d_model=512
 random_port=$((RANDOM % 9000 + 1000))
 
 export WANDB_API_KEY="7c05777e3b354a6cc5956d04e1b3a1cda2a16be0"
-export CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7
+export CUDA_VISIBLE_DEVICES=0
 export OMP_NUM_THREADS=1
 
 # Pretrain
@@ -60,8 +60,9 @@ python run_pretrain.py \
   --warmup_epochs 0 \
   --wandb_debug $wandb_mode \
   --pretrain_data_config_path data_provider/data_config/main_result/multi_task_pretrain.yaml\
-  --device 'cuda:5' \
-  --checkpoints './checkpoints_temp/' \
+  --device 'cuda:0' \
+  --checkpoints './checkpoints_pretrain/' \
+  --expert_num 8
 
   # --min_mask_ratio 0.6 \
   # --max_mask_ratio 0.8 \
