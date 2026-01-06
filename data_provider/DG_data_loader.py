@@ -290,7 +290,7 @@ class Dataset_JNU_DG(Dataset_PHM):
 
 # /*TODO*/
 class NLNEMPloader(Dataset):
-    def __init__(self, root_path, args, seq_len=1024, stride_len=1024, down_sampling_scale=1, label_type='local', flag=None, modality='Vibration', motor_id='all', normalize=True, transform=None):
+    def __init__(self, root_path, args, seq_len=1024, stride_len=1024, down_sampling_scale=1, label_type='local', flag=None, modality=None, motor_id='all', normalize=True, transform=None):
 
                  # /*TODO*/ flag 区分测试与训练
         """
@@ -305,7 +305,10 @@ class NLNEMPloader(Dataset):
         super().__init__()
         self.args = args
         self.root_path = root_path
-        self.modality = "Electric" if self.args.data == "electric" or self.args.data == "Electric" else 'Vibration'
+        if modality is None:
+            self.modality = "Electric" if self.args.data == "electric" or self.args.data == "Electric" else 'Vibration'
+        else:
+            self.modality = modality
 
         self.num_classes = args.num_classes 
         self.project_name = args.project_name      
@@ -743,8 +746,6 @@ class NLNEMPloader(Dataset):
         # 反转字典: {0: 'Normal', 1: 'Fault1'...}
         return {v: k for k, v in self.label_map.items()}
 
-
-
 def count_category_occurrences(y_list):
     """
     统计 y_list 中所有类别的出现次数，并打印结果。
@@ -780,6 +781,39 @@ def count_category_occurrences(y_list):
     print("======================================")
 
 
+
+class NLNEMP_ElecLoader(NLNEMPloader):
+    def __init__(self, root_path, args, seq_len=1024, stride_len=1024, down_sampling_scale=1, label_type='local', flag=None, motor_id='all', normalize=True, transform=None):
+        super().__init__(
+            root_path=root_path,
+            args=args,
+            seq_len=seq_len,
+            stride_len=stride_len,
+            down_sampling_scale=down_sampling_scale,
+            label_type=label_type,
+            flag=flag,
+            modality="Electric",
+            motor_id=motor_id,
+            normalize=normalize,
+            transform=transform,
+        )
+
+
+class NLNEMP_VibLoader(NLNEMPloader):
+    def __init__(self, root_path, args, seq_len=1024, stride_len=1024, down_sampling_scale=1, label_type='local', flag=None, motor_id='all', normalize=True, transform=None):
+        super().__init__(
+            root_path=root_path,
+            args=args,
+            seq_len=seq_len,
+            stride_len=stride_len,
+            down_sampling_scale=down_sampling_scale,
+            label_type=label_type,
+            flag=flag,
+            modality="Vibration",
+            motor_id=motor_id,
+            normalize=normalize,
+            transform=transform,
+        )
 
 
 # from data_provider.uea import subsample, interpolate_missing, Normalizer

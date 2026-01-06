@@ -26,7 +26,9 @@ data_dict = {
     'DG_SCP': Dataset_SCP_DG,
     'DG_JNU': Dataset_JNU_DG,
     'DG_HUST_bearing': Dataset_HUST_bearing_DG,
-    'NLNEMP': NLNEMPloader
+    'NLNEMP': NLNEMPloader,
+    'NLNEMP_Elec': NLNEMP_ElecLoader,
+    'NLNEMP_Vib': NLNEMP_VibLoader,
     # /*TODO*/
 }   
 
