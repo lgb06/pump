@@ -1,5 +1,5 @@
 task_dataset:
-  NLN-EMP:
+  NLN-EMP_Vib:
     task_name: pretrain_PHM
     dataset_name: NLNEMP_Vib
     dataset: NLNEMP_Vib
@@ -14,7 +14,7 @@ task_dataset:
     num_class: 2
     num_condition: 4
   
-  NLN-EMP:
+  NLN-EMP_Elec:
     task_name: pretrain_PHM
     dataset_name: NLNEMP_Elec
     dataset: NLNEMP_Elec
