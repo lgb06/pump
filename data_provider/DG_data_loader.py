@@ -603,9 +603,9 @@ class NLNEMPloader(Dataset):
                 X_list=X_train
                 y_list=y_train
             elif self.flag == 'test':
-                print("此为测试数据")
-                X_list=X_test
-                y_list=y_test
+                print("此为测试数据，实验setting不再以8:2进行数据划分，测试集即为zeroshot全集")
+                # X_list=X_test
+                # y_list=y_test
             else:
                 pass
         

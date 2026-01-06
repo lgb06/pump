@@ -118,11 +118,7 @@ class Exp_All_Task(object):
         super(Exp_All_Task, self).__init__()
         self.args = args
         self.task_data_config = read_task_data_config(
-            self.args.task_data_config_path)
-        #
-        # self.test_task_data_config = read_task_data_config(
-        #     "data_provider/data_config/pump/NLNEMP.yaml" )
-        # #        
+            self.args.task_data_config_path)   
         self.task_data_config_list = get_task_data_config_list(
             self.task_data_config, default_batch_size=self.args.batch_size)
         if args.ddp:
@@ -158,14 +154,17 @@ class Exp_All_Task(object):
             pass
         return model
 
-    def _get_data(self, flag):
+    def _get_data(self, flag, task_data_config_path=None):
         ddp = self.args.ddp
 
         # 不可以，因为args也会影响数据集读取 /*TODO*/
+        # self.test_task_data_config = read_task_data_config(
+        #     "data_provider/data_config/pump/NLNEMP.yaml" )
         # if flag == 'test':
         #     this_task_data_config = self.test_task_data_config
         # else:
-        this_task_data_config = self.task_data_config
+
+        this_task_data_config = read_task_data_config(task_data_config_path) if task_data_config_path is not None else self.task_data_config
         #
             
         data_set_list = []
@@ -328,8 +327,10 @@ class Exp_All_Task(object):
         # Data
         train_data_list, train_loader_list = self._get_data(flag='train')
         # Since some datasets do not have val set, we use test set and report the performance of last epoch instead of the best epoch.
-        test_data_list, test_loader_list = self._get_data(
-            flag='test')
+        test_data_list, test_loader_list = self._get_data(flag='test')
+        ## NLN-EMP测试集
+        NLNEMP_test_data_list, NLNEMP_test_loader_list = self._get_data(flag='test', task_data_config_path="data_provider/data_config/pump/NLNEMP.yaml")
+
         data_loader_cycle, train_steps = init_and_merge_datasets(
             train_loader_list)
 
@@ -358,6 +359,9 @@ class Exp_All_Task(object):
             
             avg_cls_acc, avg_forecast_mse, avg_forecast_mae = self.test(
                 setting, load_pretrain=False, test_data_list=test_data_list, test_loader_list=test_loader_list)
+            
+            avg_cls_acc_NLNEMP, _ , _ = self.test(
+                setting, load_pretrain=False, test_data_list=NLNEMP_test_data_list, test_loader_list=NLNEMP_test_loader_list)
 
             # save ckpt
             if is_main_process():
@@ -372,6 +376,7 @@ class Exp_All_Task(object):
                                                                                avg_forecast_mae, avg_cls_acc_traindata), folder=self.path)
                 print("Final testing data score: LF-mse: {}, LF-mae: {}, CLS-acc {}".format(avg_forecast_mse,
                                                                                avg_forecast_mae, avg_cls_acc), folder=self.path)
+                print("NLNEMP test data zero-shot CLS-acc {}".format(avg_cls_acc_NLNEMP), folder=self.path)
                 # Store validation accuracy
                 for task_id, (test_data, test_loader) in enumerate(zip(test_data_list, test_loader_list)):
                     task_name = self.task_data_config_list[task_id][1]['task_name']
