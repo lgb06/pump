@@ -19,7 +19,7 @@ task_dataset:
     dataset_name: CWRU
     dataset: CWRU
     data: CWRU
-    root_path: /dataWYL/WYL/PHM-Large-Model/PHM_dataset/CWRU
+    root_path: /inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/bas_pump/data/PHM_dataset/CWRU
     label_type: 'local' # 标签映射方式：默认为local，即本地映射；若为global，则为全局映射
     down_sample: 2 # 降采样系数
     seq_len: 2048 # 输入序列长度
@@ -34,7 +34,7 @@ task_dataset:
     dataset_name: RUL_XJTU
     dataset: RUL_XJTU
     data: RUL_XJTU
-    root_path: /dataWYL/WYL/PHM-Large-Model/PHM_dataset/XJTU_RUL_NEW
+    root_path: /inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/bas_pump/data/PHM_dataset/XJTU_RUL_NEW
     down_sample: 1
     seq_len: 2048
     stride_len: 256
@@ -50,7 +50,7 @@ task_dataset:
     dataset_name: QPZZ
     dataset: QPZZ
     data: QPZZ
-    root_path: /dataWYL/WYL/PHM-Large-Model/PHM_dataset/QPZZ
+    root_path: /inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/bas_pump/data/PHM_dataset/QPZZ
     label_type: 'local' # 标签映射方式：默认为local，即本地映射；若为global，则为全局映射
     down_sample: 1
     seq_len: 2048
@@ -65,7 +65,7 @@ task_dataset:
     dataset_name: SLIET
     dataset: SLIET
     data: SLIET
-    root_path: /dataWYL/WYL/PHM-Large-Model/PHM_dataset/SLIET
+    root_path: /inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/bas_pump/data/PHM_dataset/SLIET
     label_type: 'local' # 标签映射方式：默认为local，即本地映射；若为global，则为全局映射
     down_sample: 14
     seq_len: 2048
@@ -80,7 +80,7 @@ task_dataset:
     dataset_name: SMU
     dataset: SMU
     data: SMU
-    root_path: /dataWYL/WYL/PHM-Large-Model/PHM_dataset/SMU
+    root_path: /inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/bas_pump/data/PHM_dataset/SMU
     label_type: 'local' # 标签映射方式：默认为local，即本地映射；若为global，则为全局映射
     down_sample: 2  
     seq_len: 2048
@@ -96,7 +96,7 @@ task_dataset:
     dataset_name: HUST_gearbox
     dataset: HUST_gearbox
     data: HUST_gearbox
-    root_path: /dataWYL/WYL/PHM-Large-Model/PHM_dataset/HUST_gearbox
+    root_path: /inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/bas_pump/data/PHM_dataset/HUST_gearbox
     label_type: 'local' # 标签映射方式：默认为local，即本地映射；若为global，则为全局映射
     down_sample: 5
     seq_len: 2048
@@ -111,7 +111,7 @@ task_dataset:
     dataset_name: HUST_bearing
     dataset: HUST_bearing
     data: HUST_bearing
-    root_path: /dataWYL/WYL/PHM-Large-Model/PHM_dataset/HUST_bearing
+    root_path: /inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/bas_pump/data/PHM_dataset/HUST_bearing
     label_type: 'local' # 标签映射方式：默认为local，即本地映射；若为global，则为全局映射
     down_sample: 5
     seq_len: 2048
@@ -125,7 +125,7 @@ task_dataset:
     dataset_name: IMS
     dataset: IMS
     data: IMS
-    root_path: /dataWYL/WYL/PHM-Large-Model/PHM_dataset/IMS
+    root_path: /inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/bas_pump/data/PHM_dataset/IMS
     down_sample: 4
     seq_len: 2048
     stride_len:  256
@@ -140,7 +140,7 @@ task_dataset:
     dataset_name: SCP
     dataset: SCP
     data: SCP
-    root_path: /dataWYL/WYL/PHM-Large-Model/PHM_dataset/SCP
+    root_path: /inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/bas_pump/data/PHM_dataset/SCP
     down_sample: 2
     seq_len: 2048
     stride_len: 2
@@ -155,7 +155,7 @@ task_dataset:
     dataset_name: PU
     dataset: PU
     data: PU
-    root_path: /dataWYL/WYL/PHM-Large-Model/PHM_dataset/PU
+    root_path: /inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/bas_pump/data/PHM_dataset/PU
     down_sample: 12
     seq_len: 2048
     stride_len: 2048
@@ -171,7 +171,7 @@ task_dataset:
     dataset_name: LW
     dataset: LW
     data: LW
-    root_path: /dataWYL/WYL/PHM-Large-Model/PHM_dataset/LW
+    root_path: /inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/bas_pump/data/PHM_dataset/LW
     down_sample: 1
     seq_len: 2048
     stride_len: 8
@@ -186,7 +186,7 @@ task_dataset:
     dataset_name: JNU
     dataset: JNU
     data: JNU
-    root_path: /dataWYL/WYL/PHM-Large-Model/PHM_dataset/JNU
+    root_path: /inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/bas_pump/data/PHM_dataset/JNU
     down_sample: 10
     seq_len: 2048
     stride_len: 64

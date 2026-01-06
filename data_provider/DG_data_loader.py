@@ -394,7 +394,7 @@ class NLNEMPloader(Dataset):
         # 将离散的标签转换为one-hot向量
         y_tensor = F.one_hot(torch.tensor(y_tensor), num_classes=2)
 
-        return x_tensor, y_tensor
+        return x_tensor, y_tensor, y_tensor
 
     def _load_all_data(self, flag, cls_mode = -1, modality = "Vibration", motor_id = "all", down_sampling_scale = 1, root_path = "/inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/bas_pump/data/NLN-EMP/Dataset"):
         """内部函数：遍历文件并合并通道
