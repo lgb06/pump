@@ -104,7 +104,7 @@ class ExpKNN:
         sorted_labels = labels_cpu[sorted_indices]
         return sorted_scores, sorted_labels
 
-    def _save_scores_and_plot(self, sorted_scores: torch.Tensor, sorted_labels: torch.Tensor, dataset_name: str):
+    def _save_scores_and_plot(self, sorted_scores: torch.Tensor, sorted_labels: torch.Tensor, dataset_name: str, step: int = 2000):
         """
         Save sorted scores/labels to disk and generate a scatter plot colored by label.
         """
@@ -123,24 +123,49 @@ class ExpKNN:
         label_values = sorted_labels.numpy()
         score_values = sorted_scores.numpy()
         unique_labels = sorted({int(l) for l in label_values.tolist()})
-
+    
+        # ---- subsample: take 1 sample every `step` (the first in each block) ----
+        n = score_values.numel()
+        idx = torch.arange(0, n, step, dtype=torch.long)   # [M]
+        scores_s = score_values[idx]
+        labels_s = label_values[idx]
+    
+        # x-axis uses the ORIGINAL indices to keep the x meaning unchanged
+        x_axis = idx.numpy()
+        score_values = scores_s.numpy()
+        label_values = labels_s.numpy()
+    
         plt.figure(figsize=(8, 4))
-        scatter = plt.scatter(
+    
+        # 1) anomaly score：淡蓝色点
+        plt.scatter(
             x_axis,
             score_values,
-            c=label_values,
-            cmap="tab10",
-            s=14,
+            c="lightblue",
+            s=18,
             alpha=0.75,
             edgecolors="none",
+            label="Anomaly score (subsampled)",
         )
-        plt.xlabel("Sample index (sorted by anomaly score)")
+    
+        # 2) label(0/1)：红色点（y=0 或 y=1）
+        plt.scatter(
+            x_axis,
+            label_values,
+            c="red",
+            s=22,
+            alpha=0.85,
+            edgecolors="none",
+            label="Label (0/1, subsampled)",
+        )
+    
+        plt.xlabel(f"Sample index (sorted by anomaly score, every {step} samples)")
         plt.ylabel("Anomaly score")
-        plt.title(f"{dataset_name} anomaly scores")
-        if unique_labels:
-            cbar = plt.colorbar(scatter, ticks=unique_labels)
-            cbar.set_label("Label")
+        plt.title(f"{dataset_name} anomaly scores (blue) + labels (red)")
+        plt.legend(frameon=False, loc="best")
         plt.tight_layout()
+    
+        ts = datetime.now().strftime("%Y%m%d_%H%M%S")
         plot_path = self.visualization_dir / f"{safe_name}_K{self.args.knn_k}_{ts}_scores_plot.png"
         plt.savefig(plot_path, dpi=300)
         plt.close()
