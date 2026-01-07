@@ -27,14 +27,10 @@ full_exp_name="${exp_name}_${timestamp}"
 python run_KNN.py \
     --model_id $full_exp_name \
     --model $model_name \
-    --lradj head_tuning \
     --patch_len 256 \
     --stride 256 \
     --e_layers 4 \
     --d_model $d_model \
-    --des 'Exp' \
-    --itr 1 \
-    --debug $wandb_mode \
     --project_name $ptune_name \
     --batch_size 256 \
     --checkpoints $SAVE_PATH \

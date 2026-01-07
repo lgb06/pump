@@ -31,12 +31,12 @@ class ExpKNN:
         self.device = torch.device(args.device if torch.cuda.is_available() else "cpu")
 
         # Configs
-        self.train_task_data_config = read_task_data_config(args.task_data_config_path)
+        self.train_task_data_config = read_task_data_config(args.train_task_data_config_path)
         self.train_task_data_config_list = get_task_data_config_list(
             self.train_task_data_config, default_batch_size=args.batch_size
         )
         self.test_task_data_config_list = []
-        for cfg_path in args.test_config_paths:
+        for cfg_path in args.test_task_data_config_paths:
             cfg = read_task_data_config(cfg_path)
             self.test_task_data_config_list.extend(
                 get_task_data_config_list(cfg, default_batch_size=args.batch_size)
@@ -55,16 +55,19 @@ class ExpKNN:
         module = importlib.import_module("models." + self.args.model)
         model = module.Model(self.args, self.configs_list).to(self.device)
         if self.args.pretrained_weight is not None and os.path.exists(self.args.pretrained_weight):
-            state = torch.load(self.args.pretrained_weight, map_location="cpu")
-            if isinstance(state, dict):
-                if "model" in state:
-                    state = state["model"]
-                elif "student" in state:
-                    state = state["student"]
-                elif "state_dict" in state:
-                    state = state["state_dict"]
-            model.load_state_dict(state, strict=False)
-            print(f"Loaded weights from {self.args.pretrained_weight}")
+            pretrain_weight_path = self.args.pretrained_weight
+            print('loading pretrained model:', pretrain_weight_path)
+            if 'pretrain_checkpoint.pth' in pretrain_weight_path:
+                state_dict = torch.load(
+                    pretrain_weight_path, map_location='cpu', weights_only=False)['student']
+                ckpt = {}
+                for k, v in state_dict.items():
+                    if not ('cls_prompts' in k):
+                        ckpt[k] = v
+            else:
+                ckpt = torch.load(pretrain_weight_path, map_location='cpu')
+            msg = model.load_state_dict(ckpt, strict=False)
+            print(msg)
         model.eval()
         return model
 
