@@ -34,5 +34,5 @@ python run_KNN.py \
     --project_name $ptune_name \
     --batch_size 256 \
     --checkpoints $SAVE_PATH \
-    --knn_k 1 \
+    --knn_k 5 \
     --pretrained_weight '/inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/rmgpt_pump/rmgpt/checkpoints_pretrain/Base_RmGPT2_pretrain_x512_RmGPT_hd512_el4_en8_at16_it0/pretrain_checkpoint.pth'\

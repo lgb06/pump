@@ -30,7 +30,8 @@ if __name__ == "__main__":
     parser.add_argument(
         "--test_task_data_config_paths",
         type=str,
-        default="data_provider/data_config/pump/NLNEMP.yaml,data_provider/data_config/pump/NLNEMP_Elec.yaml",
+        default="data_provider/data_config/pump/NLNEMP.yaml",
+        # default="data_provider/data_config/pump/NLNEMP.yaml,data_provider/data_config/pump/NLNEMP_Elec.yaml",
         help="comma separated paths to test data configs",
     )
     parser.add_argument("--data", type=str, default="All", help="dataset type hint")
@@ -55,6 +56,7 @@ if __name__ == "__main__":
 
     # KNN settings
     parser.add_argument("--knn_threshold", type=float, default=0.5, help="threshold on anomaly score")
+    parser.add_argument("--knn_k", type=int, default=5, help="K value for KNN ")
 
     # Checkpoints
     parser.add_argument("--pretrained_weight", type=str, default=None, help="path to pretrained weights")
@@ -73,7 +75,6 @@ if __name__ == "__main__":
 
     # Derived/forced settings for KNN
     args.classification_method = "knn"
-    args.knn_k = 1
     args.knn_distance = "cosine"
     args.task_data_config_path = args.train_task_data_config_path
 

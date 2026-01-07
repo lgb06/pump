@@ -1,7 +1,13 @@
+from datetime import datetime
 import importlib
 import os
+from pathlib import Path
 from typing import Dict, List, Tuple
 
+import matplotlib
+
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
 import torch
 import yaml
 from data_provider.data_factory import data_provider
@@ -50,6 +56,7 @@ class ExpKNN:
         # Data
         self.train_loaders = self._get_loaders(self.train_task_data_config_list, flag="train")
         self.test_loaders = self._get_loaders(self.test_task_data_config_list, flag="test")
+        self.visualization_dir = Path(getattr(args, "visualization_dir", "logs/KNN_2cls/KNN/visual_anoscore_distribution"))
 
     def _build_model(self):
         module = importlib.import_module("models." + self.args.model)
@@ -87,10 +94,64 @@ class ExpKNN:
             print(f"{flag} dataset {task_name}: {len(data_set)} samples")
         return loaders
 
+    def _prepare_sorted_scores(self, scores: torch.Tensor, labels: torch.Tensor):
+        """
+        Return scores/labels sorted by score in ascending order.
+        """
+        scores_cpu = scores.detach().cpu()
+        labels_cpu = labels.detach().cpu()
+        sorted_scores, sorted_indices = torch.sort(scores_cpu)
+        sorted_labels = labels_cpu[sorted_indices]
+        return sorted_scores, sorted_labels
+
+    def _save_scores_and_plot(self, sorted_scores: torch.Tensor, sorted_labels: torch.Tensor, dataset_name: str):
+        """
+        Save sorted scores/labels to disk and generate a scatter plot colored by label.
+        """
+        safe_name = dataset_name.replace("/", "_")
+        self.visualization_dir.mkdir(parents=True, exist_ok=True)
+         # 生成当前时间字符串（文件名安全）
+        ts = datetime.now().strftime("%Y%m%d_%H%M%S") 
+
+        data_path = self.visualization_dir / f"{safe_name}_K{self.args.knn_k}_{ts}_scores_labels.pt"
+        torch.save(
+            {"scores": sorted_scores, "labels": sorted_labels, "dataset": dataset_name},
+            data_path,
+        )
+
+        x_axis = range(len(sorted_scores))
+        label_values = sorted_labels.numpy()
+        score_values = sorted_scores.numpy()
+        unique_labels = sorted({int(l) for l in label_values.tolist()})
+
+        plt.figure(figsize=(8, 4))
+        scatter = plt.scatter(
+            x_axis,
+            score_values,
+            c=label_values,
+            cmap="tab10",
+            s=14,
+            alpha=0.75,
+            edgecolors="none",
+        )
+        plt.xlabel("Sample index (sorted by anomaly score)")
+        plt.ylabel("Anomaly score")
+        plt.title(f"{dataset_name} anomaly scores")
+        if unique_labels:
+            cbar = plt.colorbar(scatter, ticks=unique_labels)
+            cbar.set_label("Label")
+        plt.tight_layout()
+        plot_path = self.visualization_dir / f"{safe_name}_K{self.args.knn_k}_{ts}_scores_plot.png"
+        plt.savefig(plot_path, dpi=300)
+        plt.close()
+
+        return data_path, plot_path
+
     def build_memory_bank(self):
         """
         Populate memory bank using normal samples (label id == 0) from training datasets.
         """
+        print("======= Building KNN memory bank from training data... ======= ")
         self.model.reset_memory_bank()
         self.model.eval()
         with torch.no_grad():
@@ -165,21 +226,28 @@ class ExpKNN:
         }
 
         return {
-            "task": entry["task_name"],
+            "task": entry["config"]["dataset_name"],
             "acc": acc,
             "auc": auc,
             "ap": ap,
             "threshold": self.args.knn_threshold,
             "score_stats": score_stats,
             "count": len(scores),
+            "scores": scores,
+            "labels": label_ids,
         }
 
     def evaluate(self):
+        print("======= Evaluating on test datasets... ======= ")
         results = []
+        global_scores = []
+        global_labels = []
         for entry in self.test_loaders:
             result = self._evaluate_single_loader(entry)
             if result is not None:
                 results.append(result)
+                global_scores.append(result["scores"])
+                global_labels.append(result["labels"])
                 print(
                     f"[{result['task']}] samples={result['count']} "
                     f"acc={result['acc']:.4f} "
@@ -187,6 +255,17 @@ class ExpKNN:
                     f"ap={result['ap'] if result['ap'] is not None else 'N/A'} "
                     f"score_mean={result['score_stats']['mean']:.4f}"
                 )
+        if global_scores:
+            merged_scores = torch.cat(global_scores)
+            merged_labels = torch.cat(global_labels)
+            sorted_scores, sorted_labels = self._prepare_sorted_scores(merged_scores, merged_labels)
+            data_path, plot_path = self._save_scores_and_plot(
+                sorted_scores, sorted_labels, dataset_name="all_datasets"
+            )
+            print(
+                f"[ALL] samples={len(sorted_scores)} "
+                f"Saved sorted scores/labels to {data_path} | plot: {plot_path}"
+            )
         return results
 
     def run(self):
