@@ -31,12 +31,12 @@ class ExpKNN:
         self.device = torch.device(args.device if torch.cuda.is_available() else "cpu")
 
         # Configs
-        self.train_task_data_config = read_task_data_config(args.train_task_data_config_path)
+        self.train_task_data_config = read_task_data_config(args.task_data_config_path)
         self.train_task_data_config_list = get_task_data_config_list(
             self.train_task_data_config, default_batch_size=args.batch_size
         )
         self.test_task_data_config_list = []
-        for cfg_path in args.test_task_data_config_paths:
+        for cfg_path in args.test_config_paths:
             cfg = read_task_data_config(cfg_path)
             self.test_task_data_config_list.extend(
                 get_task_data_config_list(cfg, default_batch_size=args.batch_size)
