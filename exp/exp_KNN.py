@@ -119,16 +119,22 @@ class ExpKNN:
             data_path,
         )
 
-        x_axis = range(len(sorted_scores))
-        label_values = sorted_labels.numpy()
-        score_values = sorted_scores.numpy()
-        unique_labels = sorted({int(l) for l in label_values.tolist()})
+        # ---- prepare tensors on cpu ----
+        scores = sorted_scores.detach().view(-1).cpu()  # [N]
+        labels = sorted_labels.detach().cpu()
+        if labels.dim() > 1:
+            label_ids = labels.argmax(dim=1)
+        else:
+            label_ids = labels.view(-1)
     
-        # ---- subsample: take 1 sample every `step` (the first in each block) ----
-        n = score_values.numel()
-        idx = torch.arange(0, n, step, dtype=torch.long)   # [M]
-        scores_s = score_values[idx]
-        labels_s = label_values[idx]
+        # binarize to {0,1}: non-zero -> 1
+        label_bin = (label_ids != 0).long()  # [N]
+    
+        # ---- subsample on torch tensors ----
+        n = scores.numel()
+        idx = torch.arange(0, n, step, dtype=torch.long)  # [M]
+        scores_s = scores[idx]
+        labels_s = label_bin[idx]
     
         # x-axis uses the ORIGINAL indices to keep the x meaning unchanged
         x_axis = idx.numpy()
