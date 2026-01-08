@@ -186,7 +186,8 @@ class Model(nn.Module):
                 label_ids = labels.argmax(dim=-1)
             else:
                 label_ids = labels
-            normal_mask = label_ids == 0
+            normal_mask = label_ids == 0    # normal_mask 形状是 [B] 的布尔向量
+            print("成功传入labels，更新memory_bank只保留normal样本")
             embeddings = embeddings[normal_mask] # 只保留 normal（label == 0）
         if embeddings.numel() == 0:
             return
@@ -246,8 +247,13 @@ class Model(nn.Module):
         x = x + self.position_embedding(x)
         x = self.backbone(x)
         B, V, L, C = x.shape
-        cls_token = x[:, :, :1, :].reshape(B, V, C)
-        cls_embeddings = cls_token.mean(dim=1)
+        # planA：用 CLS_token 做样本 embedding
+        cls_token = x[:, :, :1, :].reshape(B, V, C)  # 实际上是 [B, C, d_model]
+        # cls_embeddings = cls_token.mean(dim=1)  # 实际上是 [B, d_model]
+        # planB：用平均后的 signal_tokens 做样本 embedding
+        signal_tokens = x[:, :, 1:, :]               # [B, C, L-1, d_model]
+        pooled_signal_token = signal_tokens.mean(dim=2)        # [B, C, d_model] 
+        cls_embeddings = pooled_signal_token.mean(dim=1)
 
         if self.use_knn:
             if update_memory:
