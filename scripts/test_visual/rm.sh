@@ -51,5 +51,5 @@ python run.py \
     --batch_size 256 \
     --checkpoints $SAVE_PATH \
     --pretrained_weight $PRETRAINED_WEIGHT_PATH \
-    --visualize True \
+    --visualize 1 \
     --visualize_output_dir "./visualization_results/${PRETRAINED_WEIGHT_NAME}_pretrained/${full_exp_name}_nlnemp_visualization/"
