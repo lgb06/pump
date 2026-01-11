@@ -187,7 +187,7 @@ class Model(nn.Module):
             else:
                 label_ids = labels
             normal_mask = label_ids == 0    # normal_mask 形状是 [B] 的布尔向量
-            print("成功传入labels，更新memory_bank只保留normal样本")
+            # 已测试，成功传入labels。print("成功传入labels，更新memory_bank只保留normal样本")
             embeddings = embeddings[normal_mask] # 只保留 normal（label == 0）
         if embeddings.numel() == 0:
             return
