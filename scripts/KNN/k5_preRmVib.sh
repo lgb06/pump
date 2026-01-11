@@ -10,7 +10,7 @@ else
   SAVE_PATH="./checkpoints_KNN/"
 fi
 
-export CUDA_VISIBLE_DEVICES=3
+export CUDA_VISIBLE_DEVICES=2
 
 model_name=RmGPT_KNN
 exp_name=multi_rm_KNN
