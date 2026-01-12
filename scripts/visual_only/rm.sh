@@ -32,7 +32,7 @@ PRETRAINED_WEIGHT_NAME="rm"
 PRETRAINED_WEIGHT_PATH="/inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/rmgpt_pump/rmgpt/checkpoints_pretrain/Base_RmGPT2_pretrain_x512_RmGPT_hd512_el4_en8_at16_it0/pretrain_checkpoint.pth"
 
 #  test on nln-emp
-python run.py \
+python run_visualize_only.py \
     --is_training 0 \
     --model_id $full_exp_name \
     --model $model_name \
