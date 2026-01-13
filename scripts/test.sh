@@ -27,7 +27,8 @@ full_exp_name="${exp_name}_${timestamp}"
 
 
 PRETRAINED_WEIGHT_PARENTDIR="${parent_dir}/NLN-EMP-test/"
-PRETRAINED_WEIGHT_PATH="${parent_dir}/checkpoint.pth"
+# PRETRAINED_WEIGHT_PATH="${parent_dir}/checkpoint.pth"
+PRETRAINED_WEIGHT_PATH="${parent_dir}/pretrain_checkpoint.pth"
 #  test on nln-emp
 python run.py \
     --is_training 0 \
@@ -49,31 +50,3 @@ python run.py \
     --checkpoints $PRETRAINED_WEIGHT_PARENTDIR \
     --pretrained_weight $PRETRAINED_WEIGHT_PATH \
     
-  # --prompt_tune_epoch 20\
-  # --prompt_num 10 \
-### --checkpoints $SAVE_PATH \ # output file地址
-
-
-
-# # Supervised learning
-# python run.py \
-#   --is_training 1 \
-#   --model_id $exp_name \
-#   --model $model_name \
-#   --lradj supervised \
-#   --prompt_num 10 \
-#   --patch_len 256 \
-#   --stride 256 \
-#   --e_layers 4 \
-#   --d_model $d_model \
-#   --des 'Exp' \
-#   --itr 1 \
-#   --weight_decay 0 \
-#   --prompt_tune_epoch 20\
-#   --train_epochs 0 \
-#   --debug $wandb_mode \
-#   --project_name $ptune_name \
-#   --task_data_config_path  data_provider/data_config/main_result/multi_task.yaml \
-#   --pretrained_weight 'checkpoints/ALL_task_test_RmGPT_All_ftM_dm512_el4_test_0/pretrain_checkpoint.pth'\
-#   --learning_rate 1e-6\
-#   --batch_size 256 \

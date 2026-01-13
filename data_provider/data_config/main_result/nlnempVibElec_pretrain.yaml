@@ -1,0 +1,31 @@
+task_dataset:
+  NLN-EMP_Vib:
+    task_name: pretrain_PHM
+    dataset_name: NLNEMP_Vib
+    dataset: NLNEMP_Vib
+    data: NLNEMP_Vib
+    root_path: /inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/bas_pump/data/NLN-EMP/Dataset
+    label_type: 'local'
+    down_sample: 1
+    seq_len: 2048
+    stride_len: 2048
+    enc_in: 5
+    embed: timeF
+    num_class: 2
+    num_condition: 4
+  
+  NLN-EMP_Elec:
+    task_name: pretrain_PHM
+    dataset_name: NLNEMP_Elec
+    dataset: NLNEMP_Elec
+    data: NLNEMP_Elec
+    root_path: /inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/bas_pump/data/NLN-EMP/Dataset
+    label_type: 'local'
+    down_sample: 1
+    seq_len: 2048
+    stride_len: 2048
+    enc_in: 5
+    embed: timeF
+    num_class: 2
+    num_condition: 4
+ 

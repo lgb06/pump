@@ -107,13 +107,14 @@ class VisualizationAnalyzer:
             self.num_classes = 4
         
         # ROT dataset has 4 classes: Normal, Runout, Bearing_NG, Gear_NG
-        self.class_names = ['Normal', 'Runout', 'Bearing_NG', 'Gear_NG']
+        # self.class_names = ['Normal', 'Runout', 'Bearing_NG', 'Gear_NG']
+        self.class_names = ['Normal', 'Abnormal']
         
         # Load experiment
         self.exp = Exp_All_Task_SUP(args)
         if checkpoint_path and os.path.exists(checkpoint_path):
             print(f'Loading checkpoint: {checkpoint_path}')
-            checkpoint = torch.load(checkpoint_path, map_location='cpu')
+            checkpoint = torch.load(checkpoint_path, map_location='cpu', weights_only=False)
             if isinstance(checkpoint, dict) and 'state_dict' in checkpoint:
                 self.exp.model.load_state_dict(checkpoint['state_dict'], strict=False)
             else:
@@ -543,7 +544,7 @@ class VisualizationAnalyzer:
         # Generate all visualizations
         print('\nGenerating visualizations...')
         cm, accuracy = self.plot_confusion_matrix(os.path.join(output_dir, 'confusion_matrix.png'))
-        roc_auc = self.plot_roc_curves(os.path.join(output_dir, 'roc_curves.png'))
+        # roc_auc = self.plot_roc_curves(os.path.join(output_dir, 'roc_curves.png'))
         
         # Generate t-SNE visualization
         self.plot_tsne_visualization(os.path.join(output_dir, 'tsne_visualization.png'))
@@ -553,7 +554,7 @@ class VisualizationAnalyzer:
             self.plot_attention_visualization(os.path.join(output_dir, 'attention_visualization.png'))
         
         # Generate markdown report
-        self.generate_markdown_report(output_dir, cm, accuracy, roc_auc)
+        # self.generate_markdown_report(output_dir, cm, accuracy, roc_auc)
         
         print('\n' + '='*60)
         print('Visualization Analysis Complete!')
