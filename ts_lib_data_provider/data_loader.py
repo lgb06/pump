@@ -732,8 +732,7 @@ class UEAloader(Dataset):
         feature_names: names of columns contained in `feature_df` (same as feature_df.columns)
         all_IDs: (num_samples,) series of IDs contained in `all_df`/`feature_df` (same as all_df.index.unique() )
         labels_df: (num_samples, num_labels) pd.DataFrame of label(s) for each sample
-        max_seq_len: maximum sequence (time series) length. If None, script argument `max_seq_len` will be used.
-            (Moreover, script argument overrides this attribute)
+        max_seq_len: maximum sequence (time series) length. 
     """
 
     def __init__(self, args, root_path, file_list=None, limit_size=None, flag=None, dataset_name=None):
@@ -746,7 +745,7 @@ class UEAloader(Dataset):
         self.all_df, self.labels_df = self.load_all(root_path, file_list=file_list, flag=flag)
         self.all_IDs = self.all_df.index.unique()  # all sample IDs (integer indices 0 ... num_samples-1)
         # optional slicing length
-        self.effective_max_len = getattr(args, "max_seq_len", None) or getattr(args, "seq_len", None)
+        self.effective_max_len = getattr(args, "input_len", None)
 
         if limit_size is not None:
             if limit_size > 1:
@@ -819,17 +818,17 @@ class UEAloader(Dataset):
         lengths = df.applymap(
             lambda x: len(x)).values  # (num_samples, num_dimensions) array containing the length of each series
 
-        horiz_diffs = np.abs(lengths - np.expand_dims(lengths[:, 0], -1))
+        # horiz_diffs = np.abs(lengths - np.expand_dims(lengths[:, 0], -1))
 
         # if np.sum(horiz_diffs) > 0:  # if any row (sample) has varying length across dimensions
         #     df = df.applymap(subsample)
 
         lengths = df.applymap(lambda x: len(x)).values
-        vert_diffs = np.abs(lengths - np.expand_dims(lengths[0, :], 0))
-        if np.sum(vert_diffs) > 0:  # if any column (dimension) has varying length across samples
-            self.max_seq_len = int(np.max(lengths[:, 0]))
-        else:
-            self.max_seq_len = lengths[0, 0]
+        # vert_diffs = np.abs(lengths - np.expand_dims(lengths[0, :], 0))
+        # if np.sum(vert_diffs) > 0:  # if any column (dimension) has varying length across samples
+        #     self.max_seq_len = int(np.max(lengths[:, 0]))
+        # else:
+        #     self.max_seq_len = lengths[0, 0]
 
         # First create a (seq_len, feat_dim) dataframe for each sample, indexed by a single integer ("ID" of the sample)
         # Then concatenate into a (num_samples * seq_len, feat_dim) dataframe, with multiple rows corresponding to the

@@ -1,0 +1,27 @@
+task_dataset:
+  UEA_ECG200:
+    task_name: pretrain_uae
+    dataset_name: ECG200          # UEA 数据集名称
+    dataset: UEA
+    data: UEA
+    root_path: ./data/UEA         # 本地 .ts 所在目录，不存在会自动从 HF 下载
+    file_list: null               # 可选：指定具体 .ts 路径列表
+    limit_size: null              # 可选：限制样本数（比例或整数）
+    # num_class: 2                  # ECG200 为二分类
+    # enc_in: 1                     # 不需要知道：通道/维度数（ECG200 是单通道）
+    seq_len: 2048                   # 用于 padding/truncation 的长度
+    embed: timeF
+
+
+
+
+  UEA_GunPoint:
+    task_name: pretrain_uae
+    dataset_name: GunPoint
+    dataset: UEA
+    data: UEA
+    root_path: ./data/UEA
+    file_list: null
+    limit_size: null
+    seq_len: 96
+    embed: timeF

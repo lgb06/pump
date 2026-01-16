@@ -60,10 +60,10 @@ class Model(nn.Module):
                     if self.category_token is None:
                         shared_category_token = initialize_high_dimensional_space(args.num_classes,args.d_model) #[M,D]
                         shared_category_token = shared_category_token.unsqueeze(0).unsqueeze(1)  # 现在形状是[1, 1, M, D]
-                        if "NLN-EMP" in args.task_data_config_path or "NLNEMP" in args.task_data_config_path:
-                            shared_category_token.repeat(1,args.num_channels,1,1)   # [1, C, M, D]  未将 repeat 的结果赋给 category_token, 不生效
-                        else:
-                            shared_category_token.repeat(1,configs_list[i][1]['enc_in'],1,1)   # [1, C, M, D]   未将 repeat 的结果赋给 category_token, 不生效
+                        # if "NLN-EMP" in args.task_data_config_path or "NLNEMP" in args.task_data_config_path:
+                        #     shared_category_token.repeat(1,args.num_channels,1,1)   # [1, C, M, D]  未将 repeat 的结果赋给 category_token, 不生效
+                        # else:
+                        #     shared_category_token.repeat(1,configs_list[i][1]['enc_in'],1,1)   # [1, C, M, D]   未将 repeat 的结果赋给 category_token, 不生效
                         self.category_token = nn.Parameter(shared_category_token)  # Shared across classification tasks  ！！！还是[1, 1, M, D]
                     # # args.num_classes 针对NLN-EMP
                     # category_token = initialize_high_dimensional_space(args.num_classes,args.d_model) #[M,D]
