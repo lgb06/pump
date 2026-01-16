@@ -9,10 +9,10 @@ from torch.utils.data import Dataset, DataLoader
 from sklearn.preprocessing import StandardScaler
 from utils.timefeatures import time_features
 from ts_lib_data_provider.m4 import M4Dataset, M4Meta
-from ts_lib_data_provider.uea import subsample, interpolate_missing, Normalizer
+from ts_lib_data_provider.uea import interpolate_missing, Normalizer
 from sktime.datasets import load_from_tsfile_to_dataframe
 import warnings
-from utils.augmentation import run_augmentation_single
+# from utils.augmentation import run_augmentation_single
 from datasets import load_dataset
 from huggingface_hub import hf_hub_download
 warnings.filterwarnings('ignore')
@@ -94,8 +94,8 @@ class Dataset_ETT_hour(Dataset):
         self.data_x = data[border1:border2]
         self.data_y = data[border1:border2]
 
-        if self.set_type == 0 and self.args.augmentation_ratio > 0:
-            self.data_x, self.data_y, augmentation_tags = run_augmentation_single(self.data_x, self.data_y, self.args)
+        # if self.set_type == 0 and self.args.augmentation_ratio > 0:
+        #     self.data_x, self.data_y, augmentation_tags = run_augmentation_single(self.data_x, self.data_y, self.args)
 
         self.data_stamp = data_stamp
 
@@ -196,8 +196,8 @@ class Dataset_ETT_minute(Dataset):
         self.data_x = data[border1:border2]
         self.data_y = data[border1:border2]
 
-        if self.set_type == 0 and self.args.augmentation_ratio > 0:
-            self.data_x, self.data_y, augmentation_tags = run_augmentation_single(self.data_x, self.data_y, self.args)
+        # if self.set_type == 0 and self.args.augmentation_ratio > 0:
+        #     self.data_x, self.data_y, augmentation_tags = run_augmentation_single(self.data_x, self.data_y, self.args)
 
         self.data_stamp = data_stamp
 
@@ -306,8 +306,8 @@ class Dataset_Custom(Dataset):
         self.data_x = data[border1:border2]
         self.data_y = data[border1:border2]
 
-        if self.set_type == 0 and self.args.augmentation_ratio > 0:
-            self.data_x, self.data_y, augmentation_tags = run_augmentation_single(self.data_x, self.data_y, self.args)
+        # if self.set_type == 0 and self.args.augmentation_ratio > 0:
+        #     self.data_x, self.data_y, augmentation_tags = run_augmentation_single(self.data_x, self.data_y, self.args)
 
         self.data_stamp = data_stamp
 
@@ -745,6 +745,8 @@ class UEAloader(Dataset):
             raise ValueError("UEAloader requires a dataset_name (e.g., set args.model_id or pass dataset_name).")
         self.all_df, self.labels_df = self.load_all(root_path, file_list=file_list, flag=flag)
         self.all_IDs = self.all_df.index.unique()  # all sample IDs (integer indices 0 ... num_samples-1)
+        # optional slicing length
+        self.effective_max_len = getattr(args, "max_seq_len", None) or getattr(args, "seq_len", None)
 
         if limit_size is not None:
             if limit_size > 1:
@@ -763,7 +765,18 @@ class UEAloader(Dataset):
         self.feature_df = normalizer.normalize(self.feature_df)
         # self.num_classes = len(getattr(self, "class_names", [])) if hasattr(self, "class_names") else None
         self.num_classes = 2
-        print(len(self.all_IDs))
+        # build slicing spans; long sequences are split into windows of effective_max_len
+        self.sample_spans = []
+        for sid in self.all_IDs:
+            seq_len = len(self.feature_df.loc[sid])
+            if self.effective_max_len and seq_len > self.effective_max_len:
+                # keep only full windows; drop trailing remainder shorter than effective_max_len
+                for start in range(0, seq_len - self.effective_max_len + 1, self.effective_max_len):
+                    end = start + self.effective_max_len
+                    self.sample_spans.append((sid, start, end))
+            else:
+                self.sample_spans.append((sid, 0, seq_len))
+        print("len(self.sample_spans):",len(self.sample_spans))
 
     def _resolve_ts_path(self, root_path, dataset_name, flag):
         split = "TRAIN" if "train" in str(flag).lower() else "TEST"
@@ -808,8 +821,8 @@ class UEAloader(Dataset):
 
         horiz_diffs = np.abs(lengths - np.expand_dims(lengths[:, 0], -1))
 
-        if np.sum(horiz_diffs) > 0:  # if any row (sample) has varying length across dimensions
-            df = df.applymap(subsample)
+        # if np.sum(horiz_diffs) > 0:  # if any row (sample) has varying length across dimensions
+        #     df = df.applymap(subsample)
 
         lengths = df.applymap(lambda x: len(x)).values
         vert_diffs = np.abs(lengths - np.expand_dims(lengths[0, :], 0))
@@ -842,16 +855,16 @@ class UEAloader(Dataset):
             return case
 
     def __getitem__(self, ind):
-        batch_x = self.feature_df.loc[self.all_IDs[ind]].values
-        labels = self.labels_df.loc[self.all_IDs[ind]].values
+        sample_id, start, end = self.sample_spans[ind]
+        batch_x = self.feature_df.loc[sample_id].values[start:end]
+        labels = self.labels_df.loc[sample_id].values
         if self.flag == "TRAIN" and self.args.augmentation_ratio > 0:
-            num_samples = len(self.all_IDs)
-            num_columns = self.feature_df.shape[1]
-            seq_len = int(self.feature_df.shape[0] / num_samples)
+            num_columns = batch_x.shape[1]
+            seq_len = batch_x.shape[0]
             batch_x = batch_x.reshape((1, seq_len, num_columns))
-            batch_x, labels, augmentation_tags = run_augmentation_single(batch_x, labels, self.args)
+            # batch_x, labels, augmentation_tags = run_augmentation_single(batch_x, labels, self.args)
 
-            batch_x = batch_x.reshape((1 * seq_len, num_columns))
+            batch_x = batch_x.reshape((seq_len, num_columns))
 
         label_tensor = torch.as_tensor(labels, dtype=torch.long).flatten()
         if self.num_classes is None:
@@ -861,4 +874,4 @@ class UEAloader(Dataset):
         return self.instance_norm(torch.from_numpy(batch_x).float()), labels_one_hot
 
     def __len__(self):
-        return len(self.all_IDs)
+        return len(self.sample_spans)
