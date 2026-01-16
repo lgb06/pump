@@ -30,7 +30,9 @@ class PatchFFT_Tokenizer(nn.Module):
         assert self.patch_len == self.stride, "non-overlap"
 
     def patch_embeddings(self, x):
-        # print(f"x.shape:{x.shape}")
+        # 现在的 FFT 特征是：全局的,不随 patch 变化
+        # patch 提供的是“局部内容”  (x)   ;    x只做了「切片（unfold）」和「reshape」
+        # FFT   提供的是“背景信息”  (seq) ;    频谱的幅值 + 相位, 前一半是幅度,后一半是相位
         bs,n_vars,seq_len = x.shape
         # Compute FFT once and store the result
         fft_result = torch.fft.fft(x)
@@ -38,7 +40,7 @@ class PatchFFT_Tokenizer(nn.Module):
         seq_fft = fft_result.abs()[:,:,:seq_len//2]
         seq_phase = fft_result.angle()[:,:,:seq_len//2]
         seq = torch.cat([seq_fft,seq_phase],dim=-1)
-        x = x.unfold(dimension=-1, size=self.patch_len, step=self.stride)
+        x = x.unfold(dimension=-1, size=self.patch_len, step=self.stride)   # (bs, n_vars, seq_len)  ==>  ( bs,  n_vars,  num_patches,  patch_len )  
         x = torch.reshape(x, (x.shape[0] * x.shape[1], x.shape[2], x.shape[3]))
         return x, n_vars, seq
     

@@ -7,6 +7,7 @@ from utils.dataloader import BalancedDataLoaderIterator
 from utils.ddp import is_main_process, get_world_size
 from utils.Distill_loss import DistillLoss,SimDINOLoss
 from utils.Augments import TimeSeriesPerturbation
+from plot_loss import plot_all_train_losses
 import torch
 import torch.nn as nn
 from torch import optim
@@ -17,6 +18,7 @@ import time
 import warnings
 import numpy as np
 import yaml
+import json
 # import wandb
 import importlib
 import sys
@@ -86,6 +88,7 @@ class Exp_All_Task(object):
             device_id = args.device
         self.device_id = device_id
         self.debug = True
+        self.training_history = {'train_loss_pretrain': []}
 
         self.mask = TokenMasker(patch_len=args.patch_len, stride=args.stride)
         
@@ -154,6 +157,7 @@ class Exp_All_Task(object):
         if not os.path.exists(path) and is_main_process():
             os.makedirs(path)
         self.path = path
+        history_file = os.path.join(self.path, 'training_history.json')
         if self.args.ddp:
             torch.cuda.synchronize()
             dist.barrier()
@@ -214,6 +218,9 @@ class Exp_All_Task(object):
             print("Epoch: {0}, Steps: {1} | Avg Train Loss: {2:.7f}".format(
                 epoch + 1, train_steps, train_loss), folder=self.path)
             if is_main_process():
+                self.training_history['train_loss_pretrain'].append(train_loss)
+                with open(history_file, 'w') as f:
+                    json.dump(self.training_history, f, indent=2)
                 # wandb.log({'train_loss_avg': train_loss})
                 save_dict = {
                 'student': self.model.state_dict(),
@@ -223,6 +230,8 @@ class Exp_All_Task(object):
                 }
                 torch.save(save_dict, path + '/' + 'pretrain_checkpoint.pth')
 
+        if is_main_process():
+            plot_all_train_losses(history_file)
         return self.model
     def teacher_update(self):
         momentum = self.args.teacher_momentum # 动量系数

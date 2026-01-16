@@ -1,5 +1,7 @@
 from data_provider.data_loader import *
 from data_provider.DG_data_loader import *
+from ts_lib_data_provider.data_loader import UEAloader
+from ts_lib_data_provider.uea import collate_fn as uea_collate_fn
 import torch
 from torch.utils.data import DataLoader, Subset
 from torch.utils.data.distributed import DistributedSampler
@@ -29,6 +31,7 @@ data_dict = {
     'NLNEMP': NLNEMPloader,
     'NLNEMP_Elec': NLNEMP_ElecLoader,
     'NLNEMP_Vib': NLNEMP_VibLoader,
+    'UEA': UEAloader,
     # /*TODO*/
 }   
 
@@ -105,4 +108,26 @@ def data_provider(args, config, flag, ddp=False):  # args,
             drop_last=drop_last)
 
         return data_set, data_loader
+    elif 'classification' in config['task_name'] and config.get('data') == 'UEA':
+        dataset_name = config.get('dataset_name', config.get('data'))
+        data_set = Data(
+            args=args,
+            root_path=config['root_path'],
+            flag=flag,
+            file_list=config.get('file_list'),
+            limit_size=config.get('limit_size'),
+            dataset_name=dataset_name,
+        )
 
+        max_len = config.get('seq_len', getattr(args, 'input_len', None))
+        data_loader = DataLoader(
+            data_set,
+            batch_size=batch_size,
+            shuffle=False if ddp else shuffle_flag,
+            num_workers=args.num_workers,
+            sampler=DistributedSampler(data_set) if ddp else None,
+            drop_last=False,
+            collate_fn=lambda x: uea_collate_fn(x, max_len=max_len, num_classes=data_set.num_classes)
+        )
+
+        return data_set, data_loader

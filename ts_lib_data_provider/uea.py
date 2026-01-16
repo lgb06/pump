@@ -2,9 +2,10 @@ import os
 import numpy as np
 import pandas as pd
 import torch
+import torch.nn.functional as F
 
 
-def collate_fn(data, max_len=None):
+def collate_fn(data, max_len=None, num_classes=None):
     """Build mini-batch tensors from a list of (X, mask) tuples. Mask input. Create
     Args:
         data: len(batch_size) list of tuples (X, y).
@@ -34,6 +35,14 @@ def collate_fn(data, max_len=None):
         end = min(lengths[i], max_len)
         X[i, :end, :] = features[i][:end, :]
 
+    # /*TODO*/      二分类训练 one-hot 编码
+    #  target_list = []
+    # for lbl in labels:
+    #     if num_classes is not None and lbl.numel() == 1:
+    #         target_list.append(F.one_hot(lbl.long().view(-1), num_classes=num_classes).squeeze(0))
+    #     else:
+    #         target_list.append(lbl)
+    # targets = torch.stack(target_list, dim=0)  # (batch_size, num_labels)
     targets = torch.stack(labels, dim=0)  # (batch_size, num_labels)
 
     padding_masks = padding_mask(torch.tensor(lengths, dtype=torch.int16),
@@ -48,8 +57,8 @@ def padding_mask(lengths, max_len=None):
     where 1 means keep element at this position (time step)
     """
     batch_size = lengths.numel()
-    max_len = max_len or lengths.max_val()  # trick works because of overloading of 'or' operator for non-boolean types
-    return (torch.arange(0, max_len, device=lengths.device)
+    max_len_val = int(max_len) if max_len is not None else int(lengths.max())
+    return (torch.arange(0, max_len_val, device=lengths.device)
             .type_as(lengths)
             .repeat(batch_size, 1)
             .lt(lengths.unsqueeze(1)))

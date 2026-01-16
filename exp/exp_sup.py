@@ -12,6 +12,7 @@ from sklearn.metrics import precision_recall_fscore_support
 from sklearn.metrics import accuracy_score
 import pandas as pd
 from exp.exp_pretrain import custom_print_decorator
+from plot_loss import plot_all_train_losses
 import torch
 import torch.nn as nn
 from torch import optim
@@ -22,6 +23,7 @@ import time
 import warnings
 import numpy as np
 import yaml
+import json
 # import wandb
 import sys
 import copy
@@ -322,6 +324,7 @@ class Exp_All_Task(object):
         if not os.path.exists(path) and is_main_process():
             os.makedirs(path)
         self.path = path
+        history_file = os.path.join(self.path, 'training_history.json')
         self.load_model_from_pretrain(setting)
         self.train_parameter_choice()
         # Data
@@ -388,10 +391,13 @@ class Exp_All_Task(object):
                         # This will be updated after test completes
                 
                 # Save training history to file
-                import json
-                history_file = os.path.join(self.path, 'training_history.json')
                 with open(history_file, 'w') as f:
                     json.dump(self.training_history, f, indent=2)
+
+        if is_main_process():
+            with open(history_file, 'w') as f:
+                json.dump(self.training_history, f, indent=2)
+            plot_all_train_losses(history_file)
 
         return self.model
 

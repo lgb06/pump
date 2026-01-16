@@ -58,8 +58,8 @@ class Model(nn.Module):
                 if 'classification'  in configs_list[i][1]['task_name']:
                     category_token = initialize_high_dimensional_space(configs_list[i][1]['num_class'],args.d_model) #[M,D]
                     category_token = category_token.unsqueeze(0).unsqueeze(1)  # 现在形状是 [1, 1, M, D]
-                    category_token.repeat(1,configs_list[i][1]['enc_in'],1,1)
-                    self.category_token[task_data_name]= nn.Parameter(category_token)
+                    category_token.repeat(1,configs_list[i][1]['enc_in'],1,1)           # ??????未将 repeat 的结果赋给 category_token, 不生效，
+                    self.category_token[task_data_name]= nn.Parameter(category_token)   #  ！！！还是[1, 1, M, D]
                 if 'RUL' in configs_list[i][1]['task_name']:
                     self.rul_head[task_data_name] = nn.Linear(args.d_model*configs_list[i][1]['enc_in'],
                                                                     1)

@@ -4,11 +4,12 @@ import pandas as pd
 import glob
 import re
 import torch
+import torch.nn.functional as F
 from torch.utils.data import Dataset, DataLoader
 from sklearn.preprocessing import StandardScaler
 from utils.timefeatures import time_features
-from data_provider.m4 import M4Dataset, M4Meta
-from data_provider.uea import subsample, interpolate_missing, Normalizer
+from ts_lib_data_provider.m4 import M4Dataset, M4Meta
+from ts_lib_data_provider.uea import subsample, interpolate_missing, Normalizer
 from sktime.datasets import load_from_tsfile_to_dataframe
 import warnings
 from utils.augmentation import run_augmentation_single
@@ -735,10 +736,13 @@ class UEAloader(Dataset):
             (Moreover, script argument overrides this attribute)
     """
 
-    def __init__(self, args, root_path, file_list=None, limit_size=None, flag=None):
+    def __init__(self, args, root_path, file_list=None, limit_size=None, flag=None, dataset_name=None):
         self.args = args
         self.root_path = root_path
         self.flag = flag
+        self.dataset_name = dataset_name or getattr(args, "model_id", None)
+        if not self.dataset_name:
+            raise ValueError("UEAloader requires a dataset_name (e.g., set args.model_id or pass dataset_name).")
         self.all_df, self.labels_df = self.load_all(root_path, file_list=file_list, flag=flag)
         self.all_IDs = self.all_df.index.unique()  # all sample IDs (integer indices 0 ... num_samples-1)
 
@@ -757,6 +761,8 @@ class UEAloader(Dataset):
         # pre_process
         normalizer = Normalizer()
         self.feature_df = normalizer.normalize(self.feature_df)
+        # self.num_classes = len(getattr(self, "class_names", [])) if hasattr(self, "class_names") else None
+        self.num_classes = 2
         print(len(self.all_IDs))
 
     def _resolve_ts_path(self, root_path, dataset_name, flag):
@@ -779,7 +785,7 @@ class UEAloader(Dataset):
             labels_df: dataframe containing label(s) for each sample
         """
         # Select paths for training and evaluation
-        dataset_name = self.args.model_id
+        dataset_name = self.dataset_name
         ts_path = self._resolve_ts_path(root_path, dataset_name, flag or "train")
 
         all_df, labels_df = self.load_single(ts_path)
@@ -792,6 +798,10 @@ class UEAloader(Dataset):
         self.class_names = labels.cat.categories
         labels_df = pd.DataFrame(labels.cat.codes,
                                  dtype=np.int8)  # int8-32 gives an error when using nn.CrossEntropyLoss
+        # self.num_classes = len(self.class_names)
+        if self.num_classes != len(self.class_names):
+            raise ValueError("num_classes is not set to 2 for UEAloader; please ensure 2-cls and check class_names.")
+        # /*TODO*/
 
         lengths = df.applymap(
             lambda x: len(x)).values  # (num_samples, num_dimensions) array containing the length of each series
@@ -843,8 +853,12 @@ class UEAloader(Dataset):
 
             batch_x = batch_x.reshape((1 * seq_len, num_columns))
 
-        return self.instance_norm(torch.from_numpy(batch_x)), \
-               torch.from_numpy(labels)
+        label_tensor = torch.as_tensor(labels, dtype=torch.long).flatten()
+        if self.num_classes is None:
+            raise ValueError("num_classes is not set for UEAloader; please ensure dataset metadata is available.")
+        labels_one_hot = F.one_hot(label_tensor, num_classes=self.num_classes).squeeze(0)
+
+        return self.instance_norm(torch.from_numpy(batch_x).float()), labels_one_hot
 
     def __len__(self):
         return len(self.all_IDs)

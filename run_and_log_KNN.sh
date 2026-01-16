@@ -13,12 +13,6 @@ LOG_NAME="${1:-}"
 SCRIPT_TO_EXECUTE="$2"
 # LOG_NAME="KNN-2cls"
 
-# 定义日志文件存放的目录
-if [ -n "$LOG_NAME" ]; then
-  LOG_DIR="./logs/${LOG_NAME}/${PARENT_DIR_NAME}/"
-else
-  LOG_DIR="./logs/${PARENT_DIR_NAME}/"
-fi 
 
 # 从输入路径中提取脚本的基本名称（不含扩展名）
 #     basename ${SCRIPT_TO_EXECUTE} .sh
@@ -33,6 +27,12 @@ SCRIPT_BASENAME=$(basename "${SCRIPT_TO_EXECUTE}" .sh)
 SCRIPT_DIR=$(dirname "${SCRIPT_TO_EXECUTE}")
 PARENT_DIR_NAME=$(basename "${SCRIPT_DIR}")
 
+# 定义日志文件存放的目录
+if [ -n "$LOG_NAME" ]; then
+  LOG_DIR="./logs/${LOG_NAME}/${PARENT_DIR_NAME}/"
+else
+  LOG_DIR="./logs/${PARENT_DIR_NAME}/"
+fi 
 
 # 生成当前时间戳
 TIMESTAMP=$(date +"%Y%m%d_%H%M%S")

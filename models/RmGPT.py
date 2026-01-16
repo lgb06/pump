@@ -61,10 +61,10 @@ class Model(nn.Module):
                         shared_category_token = initialize_high_dimensional_space(args.num_classes,args.d_model) #[M,D]
                         shared_category_token = shared_category_token.unsqueeze(0).unsqueeze(1)  # 现在形状是[1, 1, M, D]
                         if "NLN-EMP" in args.task_data_config_path or "NLNEMP" in args.task_data_config_path:
-                            shared_category_token.repeat(1,args.num_channels,1,1)   # [1, C, M, D]
+                            shared_category_token.repeat(1,args.num_channels,1,1)   # [1, C, M, D]  未将 repeat 的结果赋给 category_token, 不生效
                         else:
-                            shared_category_token.repeat(1,configs_list[i][1]['enc_in'],1,1)   # [1, C, M, D]
-                        self.category_token = nn.Parameter(shared_category_token)  # Shared across classification tasks
+                            shared_category_token.repeat(1,configs_list[i][1]['enc_in'],1,1)   # [1, C, M, D]   未将 repeat 的结果赋给 category_token, 不生效
+                        self.category_token = nn.Parameter(shared_category_token)  # Shared across classification tasks  ！！！还是[1, 1, M, D]
                     # # args.num_classes 针对NLN-EMP
                     # category_token = initialize_high_dimensional_space(args.num_classes,args.d_model) #[M,D]
                     # # category_token = initialize_high_dimensional_space(configs_list[i][1]['num_class'],args.d_model) #[M,D]       configs_list[i][1]['num_class']目的是为了多个数据集混合训
@@ -80,8 +80,7 @@ class Model(nn.Module):
                     
                     # self.category_token[task_data_name]= nn.Parameter(category_token)
                 if 'RUL' in configs_list[i][1]['task_name']:
-                    self.rul_head[task_data_name] = nn.Linear(args.d_model*configs_list[i][1]['enc_in'],
-                                                                    1)
+                    self.rul_head[task_data_name] = nn.Linear(args.d_model*configs_list[i][1]['enc_in'],1)
         self.configs_list = configs_list 
         self.d_model = args.d_model
         self.stride = args.stride
@@ -213,15 +212,17 @@ class Model(nn.Module):
         # 将 cls_token 从 [B, V, C] 调整为 [B, V, 1, D]
         cls_token_reshaped = cls_token.unsqueeze(2)  # [B, V, 1, D]         [B，C， 1，d_model] 
 
-        # 将 category_token 从 [1, V, M, D] 广播到 [B, V, M, D]    ## 其实就是[B，C， num_classes，d_model] 
+        # 将 category_token 从 [1, 1！！, M, D] 广播到 [B, 1！！, M, D]    ## 其实就是[B，1！！， num_classes，d_model] 
         category_token_expanded = category_token.repeat(B, 1, 1, 1)
 
         # 计算余弦相似度，在最后一个维度(D)上
-        # 这会得到形状为 [B, V, 1, M] 的张量
+        # 输入F.cosine_similarity中时，向量被广播到共同形状 [B, V, M, D] ，category_token_expanded也从[B, 1！！, M, D]被广播到[B, V, M, D]  
+        # category_token_expanded 在 V 维是 1，会被广播到 V；cls_token_reshaped 在 M 维是 1，会被广播到 M
+        # 这会得到形状为 [B, V, M] 的张量，cosine_similarity的参数keepdim默认是 False，不保留dim=3维度
         similarity = F.cosine_similarity(cls_token_reshaped, category_token_expanded, dim=3)
 
-        # 移除大小为1的维度，得到 [B, V, M]
-        similarity = similarity.squeeze(2).mean(dim=1)
+        # 对V通道求均值，得到 [B, M]
+        similarity = similarity.squeeze(2).mean(dim=1)  # squeeze(2) 只能压缩维度大小为 1 的维度。如果 M 不等于 1，PyTorch 会忽略这个操作
 
         # 在类别维度M上应用log_softmax
         # category_vector = F.log_softmax(similarity, dim=1)  # [B, M]
