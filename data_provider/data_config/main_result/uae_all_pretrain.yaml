@@ -1,0 +1,110 @@
+task_dataset:
+  UEA_EthanolConcentration:
+    task_name: pretrain_uae
+    dataset_name: EthanolConcentration
+    dataset: UEA
+    data: UEA
+    root_path: /inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/bas_pump/data/dataset/UAE/EthanolConcentration
+    file_list: null
+    limit_size: null
+    seq_len: 2048
+    embed: timeF
+
+  UEA_FaceDetection:
+    task_name: pretrain_uae
+    dataset_name: FaceDetection
+    dataset: UEA
+    data: UEA
+    root_path: /inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/bas_pump/data/dataset/UAE/FaceDetection
+    file_list: null
+    limit_size: null
+    seq_len: 2048
+    embed: timeF
+
+  UEA_Handwriting:
+    task_name: pretrain_uae
+    dataset_name: Handwriting
+    dataset: UEA
+    data: UEA
+    root_path: /inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/bas_pump/data/dataset/UAE/Handwriting
+    file_list: null
+    limit_size: null
+    seq_len: 2048
+    embed: timeF
+
+  UEA_Heartbeat:
+    task_name: pretrain_uae
+    dataset_name: Heartbeat
+    dataset: UEA
+    data: UEA
+    root_path: /inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/bas_pump/data/dataset/UAE/Heartbeat
+    file_list: null
+    limit_size: null
+    seq_len: 2048
+    embed: timeF
+
+  UEA_JapaneseVowels:
+    task_name: pretrain_uae
+    dataset_name: JapaneseVowels
+    dataset: UEA
+    data: UEA
+    root_path: /inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/bas_pump/data/dataset/UAE/JapaneseVowels
+    file_list: null
+    limit_size: null
+    seq_len: 2048
+    embed: timeF
+
+  UEA_PEMS-SF:
+    task_name: pretrain_uae
+    dataset_name: PEMS-SF
+    dataset: UEA
+    data: UEA
+    root_path: /inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/bas_pump/data/dataset/UAE/PEMS-SF
+    file_list: null
+    limit_size: null
+    seq_len: 2048
+    embed: timeF
+
+  UEA_SelfRegulationSCP1:
+    task_name: pretrain_uae
+    dataset_name: SelfRegulationSCP1
+    dataset: UEA
+    data: UEA
+    root_path: /inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/bas_pump/data/dataset/UAE/SelfRegulationSCP1
+    file_list: null
+    limit_size: null
+    seq_len: 2048
+    embed: timeF
+
+  UEA_SelfRegulationSCP2:
+    task_name: pretrain_uae
+    dataset_name: SelfRegulationSCP2
+    dataset: UEA
+    data: UEA
+    root_path: /inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/bas_pump/data/dataset/UAE/SelfRegulationSCP2
+    file_list: null
+    limit_size: null
+    seq_len: 2048
+    embed: timeF
+
+  UEA_SpokenArabicDigits:
+    task_name: pretrain_uae
+    dataset_name: SpokenArabicDigits
+    dataset: UEA
+    data: UEA
+    root_path: /inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/bas_pump/data/dataset/UAE/SpokenArabicDigits
+    file_list: null
+    limit_size: null
+    seq_len: 2048
+    embed: timeF
+
+  UEA_UWaveGestureLibrary:
+    task_name: pretrain_uae
+    dataset_name: UWaveGestureLibrary
+    dataset: UEA
+    data: UEA
+    root_path: /inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/bas_pump/data/dataset/UAE/UWaveGestureLibrary
+    file_list: null
+    limit_size: null
+    seq_len: 2048
+    embed: timeF

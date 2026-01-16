@@ -10,9 +10,9 @@ d_model=512
 python run_pretrain.py \
   --is_training 1 \
   --task_name UEA_only_pretrain \
-  --model_id ECG200 \
+  --model_id $exp_name \
   --model RmGPT \
-  --pretrain_data_config_path data_provider/data_config/main_result/uae_pretrain.yaml \
+  --pretrain_data_config_path data_provider/data_config/main_result/uae_all_pretrain.yaml \
   --prompt_num 10 \
   --patch_len 256 \
   --stride 256 \
