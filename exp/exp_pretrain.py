@@ -369,6 +369,12 @@ class Exp_All_Task(object):
             batch_x = batch_x.float().to(self.device_id)
             batch_x_mark = batch_x_mark.float().to(self.device_id)
             padding_mask = padding_mask.int().to(self.device_id)
+        else:
+            batch_x, _, padding_mask = this_batch
+            batch_x = batch_x.float().to(self.device_id)
+            batch_x_mark = padding_mask.float().to(self.device_id)
+            padding_mask = batch_x_mark.bool().to(self.device_id)
+
         if min_keep_ratio is not None:
             keep_ratios = torch.rand(
                 1, device=batch_x.device) * (1.0 - min_keep_ratio) + min_keep_ratio

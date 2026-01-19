@@ -1,0 +1,22 @@
+task_dataset:
+  UEA_Handwriting:
+    task_name: pretrain_uae
+    dataset_name: Handwriting
+    dataset: UEA
+    data: UEA
+    root_path: /inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/bas_pump/data/dataset/UAE/Handwriting
+    file_list: null
+    limit_size: null
+    seq_len: 2048
+    embed: timeF
+
+  UEA_UWaveGestureLibrary:
+    task_name: pretrain_uae
+    dataset_name: UWaveGestureLibrary
+    dataset: UEA
+    data: UEA
+    root_path: /inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/bas_pump/data/dataset/UAE/UWaveGestureLibrary
+    file_list: null
+    limit_size: null
+    seq_len: 2048
+    embed: timeF

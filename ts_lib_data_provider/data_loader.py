@@ -8,7 +8,7 @@ import torch.nn.functional as F
 from torch.utils.data import Dataset, DataLoader
 from sklearn.preprocessing import StandardScaler
 from utils.timefeatures import time_features
-from ts_lib_data_provider.m4 import M4Dataset, M4Meta
+# from ts_lib_data_provider.m4 import M4Dataset, M4Meta
 from ts_lib_data_provider.uea import interpolate_missing, Normalizer
 from sktime.datasets import load_from_tsfile_to_dataframe
 import warnings
@@ -740,6 +740,7 @@ class UEAloader(Dataset):
         self.root_path = root_path
         self.flag = flag
         self.dataset_name = dataset_name or getattr(args, "model_id", None)
+        self.num_classes = 2
         if not self.dataset_name:
             raise ValueError("UEAloader requires a dataset_name (e.g., set args.model_id or pass dataset_name).")
         self.all_df, self.labels_df = self.load_all(root_path, file_list=file_list, flag=flag)
@@ -763,7 +764,6 @@ class UEAloader(Dataset):
         normalizer = Normalizer()
         self.feature_df = normalizer.normalize(self.feature_df)
         # self.num_classes = len(getattr(self, "class_names", [])) if hasattr(self, "class_names") else None
-        self.num_classes = 2
         # build slicing spans; long sequences are split into windows of effective_max_len
         self.sample_spans = []
         for sid in self.all_IDs:
@@ -811,8 +811,8 @@ class UEAloader(Dataset):
         labels_df = pd.DataFrame(labels.cat.codes,
                                  dtype=np.int8)  # int8-32 gives an error when using nn.CrossEntropyLoss
         # self.num_classes = len(self.class_names)
-        if self.num_classes != len(self.class_names):
-            raise ValueError("num_classes is not set to 2 for UEAloader; please ensure 2-cls and check class_names.")
+        # if self.num_classes != len(self.class_names):
+        #     raise ValueError("num_classes is not set to 2 for UEAloader; please ensure 2-cls and check class_names.")
         # /*TODO*/
 
         lengths = df.applymap(
@@ -868,9 +868,12 @@ class UEAloader(Dataset):
         label_tensor = torch.as_tensor(labels, dtype=torch.long).flatten()
         if self.num_classes is None:
             raise ValueError("num_classes is not set for UEAloader; please ensure dataset metadata is available.")
-        labels_one_hot = F.one_hot(label_tensor, num_classes=self.num_classes).squeeze(0)
+        # labels_one_hot = F.one_hot(label_tensor, num_classes=self.num_classes).squeeze(0)
+        # /*TODO*/
+        labels_one_hot = label_tensor
 
         return self.instance_norm(torch.from_numpy(batch_x).float()), labels_one_hot
+        # /*TODO*/
 
     def __len__(self):
         return len(self.sample_spans)

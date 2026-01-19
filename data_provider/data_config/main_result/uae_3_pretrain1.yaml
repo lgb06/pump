@@ -1,0 +1,34 @@
+task_dataset:
+  UEA_Heartbeat:
+    task_name: pretrain_uae
+    dataset_name: Heartbeat
+    dataset: UEA
+    data: UEA
+    root_path: /inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/bas_pump/data/dataset/UAE/Heartbeat
+    file_list: null
+    limit_size: null
+    seq_len: 2048
+    embed: timeF
+
+  UEA_JapaneseVowels:
+    task_name: pretrain_uae
+    dataset_name: JapaneseVowels
+    dataset: UEA
+    data: UEA
+    root_path: /inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/bas_pump/data/dataset/UAE/JapaneseVowels
+    file_list: null
+    limit_size: null
+    seq_len: 2048
+    embed: timeF
+
+
+  UEA_SpokenArabicDigits:
+    task_name: pretrain_uae
+    dataset_name: SpokenArabicDigits
+    dataset: UEA
+    data: UEA
+    root_path: /inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/bas_pump/data/dataset/UAE/SpokenArabicDigits
+    file_list: null
+    limit_size: null
+    seq_len: 2048
+    embed: timeF

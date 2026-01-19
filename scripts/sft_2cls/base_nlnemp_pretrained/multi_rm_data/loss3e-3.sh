@@ -10,7 +10,7 @@ else
   SAVE_PATH="./checkpoints_sft_2cls/"
 fi
 
-export CUDA_VISIBLE_DEVICES=1
+export CUDA_VISIBLE_DEVICES=3
 
 model_name=RmGPT
 exp_name=multi_rm

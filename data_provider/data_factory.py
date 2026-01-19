@@ -108,7 +108,7 @@ def data_provider(args, config, flag, ddp=False):  # args,
             drop_last=drop_last)
 
         return data_set, data_loader
-    elif 'classification' in config['task_name'] and config.get('data') == 'UEA':
+    elif config.get('data') == 'UEA':
         dataset_name = config.get('dataset_name', config.get('data'))
         data_set = Data(
             args=args,
