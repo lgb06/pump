@@ -735,7 +735,8 @@ class UEAloader(Dataset):
         max_seq_len: maximum sequence (time series) length. 
     """
 
-    def __init__(self, args, root_path, file_list=None, limit_size=None, flag=None, dataset_name=None):
+    def __init__(self, args, root_path, file_list=None, limit_size=None, flag=None, dataset_name=None,
+                 max_len=None):
         self.args = args
         self.root_path = root_path
         self.flag = flag
@@ -746,7 +747,9 @@ class UEAloader(Dataset):
         self.all_df, self.labels_df = self.load_all(root_path, file_list=file_list, flag=flag)
         self.all_IDs = self.all_df.index.unique()  # all sample IDs (integer indices 0 ... num_samples-1)
         # optional slicing length
-        self.effective_max_len = getattr(args, "input_len", None)
+        self.max_len = max_len if max_len is not None else getattr(args, "input_len", None) # 优先取 config['seq_len'] 的参数，若None则取 args.input_len
+        if self.max_len is None:
+            raise ValueError("UEAloader requires max_len (e.g., set config.seq_len or args.input_len).")
 
         if limit_size is not None:
             if limit_size > 1:
@@ -764,14 +767,14 @@ class UEAloader(Dataset):
         normalizer = Normalizer()
         self.feature_df = normalizer.normalize(self.feature_df)
         # self.num_classes = len(getattr(self, "class_names", [])) if hasattr(self, "class_names") else None
-        # build slicing spans; long sequences are split into windows of effective_max_len
+        # build slicing spans; long sequences are split into windows of max_len
         self.sample_spans = []
         for sid in self.all_IDs:
             seq_len = len(self.feature_df.loc[sid])
-            if self.effective_max_len and seq_len > self.effective_max_len:
-                # keep only full windows; drop trailing remainder shorter than effective_max_len
-                for start in range(0, seq_len - self.effective_max_len + 1, self.effective_max_len):
-                    end = start + self.effective_max_len
+            if self.max_len and seq_len > self.max_len:
+                # keep only full windows; drop trailing remainder shorter than max_len
+                for start in range(0, seq_len - self.max_len + 1, self.max_len):
+                    end = start + self.max_len
                     self.sample_spans.append((sid, start, end))
             else:
                 self.sample_spans.append((sid, 0, seq_len))
@@ -855,24 +858,34 @@ class UEAloader(Dataset):
 
     def __getitem__(self, ind):
         sample_id, start, end = self.sample_spans[ind]
-        batch_x = self.feature_df.loc[sample_id].values[start:end]
-        labels = self.labels_df.loc[sample_id].values
-        if self.flag == "TRAIN" and self.args.augmentation_ratio > 0:
-            num_columns = batch_x.shape[1]
-            seq_len = batch_x.shape[0]
-            batch_x = batch_x.reshape((1, seq_len, num_columns))
-            # batch_x, labels, augmentation_tags = run_augmentation_single(batch_x, labels, self.args)
+        x = self.feature_df.loc[sample_id].values[start:end]
+        seq_len = x.shape[0]
+        target_len = self.max_len if self.max_len is not None else seq_len
+        padding_mask = torch.ones(target_len, dtype=torch.bool)
+        label = self.label_df.loc[sample_id].values
 
-            batch_x = batch_x.reshape((seq_len, num_columns))
+        # 不进行数据增强
+        # if self.flag == "TRAIN" and self.args.augmentation_ratio > 0:
+        #     num_columns = x.shape[1]
+        #     x = x.reshape((dd1, seq_len, num_columns))
+        #     x, labels, augmentation_tags = run_augmentation_single(x, labels, self.args)
+        #     x = x.reshape((seq_len, num_columns))
 
-        label_tensor = torch.as_tensor(labels, dtype=torch.long).flatten()
+        label_tensor = torch.as_tensor(label, dtype=torch.long).flatten()
         if self.num_classes is None:
             raise ValueError("num_classes is not set for UEAloader; please ensure dataset metadata is available.")
-        # labels_one_hot = F.one_hot(label_tensor, num_classes=self.num_classes).squeeze(0)
+        # label_one_hot = F.one_hot(label_tensor, num_classes=self.num_classes).squeeze(0)
         # /*TODO*/
-        labels_one_hot = label_tensor
+        label_one_hot = label_tensor
 
-        return self.instance_norm(torch.from_numpy(batch_x).float()), labels_one_hot
+        x_tensor = torch.from_numpy(x).float()
+        x_tensor = self.instance_norm(x_tensor)
+        if seq_len < target_len:
+            pad_len = target_len - seq_len
+            x_tensor = F.pad(x_tensor, (0, 0, 0, pad_len))
+            padding_mask[seq_len:] = False
+
+        return x_tensor, label_one_hot, padding_mask
         # /*TODO*/
 
     def __len__(self):

@@ -283,7 +283,10 @@ class Dataset_JNU_DG(Dataset_PHM):
 
         return data, label,label
     
-
+# padding_mask 只是用来告诉模型哪些位置是真实数据、哪些是 padding   
+# data_factory.py 对 PHM 任务直接把 Dataset 的三个返回值组成 batch，不再做自定义 collate。（exp_pretrain.py/exp_sup.py 里的 PHM 处理分支（如 get_multi_source_data）期望三元组 (batch_x, batch_x_mark, padding_mask)。）
+# PHM 数据本身所有位置都是真实数据，不涉及padding，所以实际上不需要padding mask。所以这里用 label 作为占位传上去，保持三元组长度不报错。
+# 模型实际不会把这个占位的第三个值当作真实标签用；在分类路径里，它通常只是被转换成全 1 mask 或直接忽略。
 
 
 

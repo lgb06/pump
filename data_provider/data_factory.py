@@ -1,7 +1,6 @@
 from data_provider.data_loader import *
 from data_provider.DG_data_loader import *
 from ts_lib_data_provider.data_loader import UEAloader
-from ts_lib_data_provider.uea import collate_fn as uea_collate_fn
 import torch
 from torch.utils.data import DataLoader, Subset
 from torch.utils.data.distributed import DistributedSampler
@@ -99,35 +98,29 @@ def data_provider(args, config, flag, ddp=False):  # args,
         if args.task_name =='few_shot' and flag == 'train':
 
             print("few_shot at setiing of", len(data_set))
-        data_loader = DataLoader(
-            data_set,
-            batch_size=batch_size,
-            shuffle=False if ddp else shuffle_flag,
-            num_workers=args.num_workers,
-            sampler=DistributedSampler(data_set) if ddp else None,
-            drop_last=drop_last)
 
-        return data_set, data_loader
     elif config.get('data') == 'UEA':
         dataset_name = config.get('dataset_name', config.get('data'))
+        max_len = config.get('seq_len', getattr(args, 'input_len', None))
         data_set = Data(
-            args=args,
             root_path=config['root_path'],
-            flag=flag,
+            max_len=config['seq_len'],
+            # stride_len=config['stride_len'],  stride_len以及 down_sampling_scale以及 label_type 参数，在 UEA 数据集中没有使用 /*TODO*/
+            # down_sampling_scale=config['down_sample'],
+            # label_type=config['label_type'] if 'label_type' in config else None,
+            flag = flag,
+            args = args, 
             file_list=config.get('file_list'),
             limit_size=config.get('limit_size'),
             dataset_name=dataset_name,
         )
 
-        max_len = config.get('seq_len', getattr(args, 'input_len', None))
-        data_loader = DataLoader(
-            data_set,
-            batch_size=batch_size,
-            shuffle=False if ddp else shuffle_flag,
-            num_workers=args.num_workers,
-            sampler=DistributedSampler(data_set) if ddp else None,
-            drop_last=False,
-            collate_fn=lambda x: uea_collate_fn(x, max_len=max_len, num_classes=data_set.num_classes)
-        )
 
-        return data_set, data_loader
+    data_loader = DataLoader(
+        data_set,
+        batch_size=batch_size,
+        shuffle=False if ddp else shuffle_flag,
+        num_workers=args.num_workers,
+        sampler=DistributedSampler(data_set) if ddp else None,
+        drop_last=drop_last)
+    return data_set, data_loader
