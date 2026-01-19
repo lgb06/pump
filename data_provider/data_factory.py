@@ -116,6 +116,13 @@ def data_provider(args, config, flag, ddp=False):  # args,
         )
 
 
+    dataset_len = len(data_set)
+    if drop_last and dataset_len < batch_size:
+        # Avoid empty dataloaders when dataset is smaller than batch_size (len(dataloader) would be 0)
+        drop_last = False
+        if is_main_process():
+            print(f"[data_provider] drop_last disabled because dataset_len={dataset_len} < batch_size={batch_size}")
+
     data_loader = DataLoader(
         data_set,
         batch_size=batch_size,
