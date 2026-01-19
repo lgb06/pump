@@ -844,6 +844,8 @@ class UEAloader(Dataset):
         grp = df.groupby(by=df.index)
         df = grp.transform(interpolate_missing)
 
+        print("self.class_names:",self.class_names)
+
         return df, labels_df
 
     def instance_norm(self, case):
@@ -862,7 +864,7 @@ class UEAloader(Dataset):
         seq_len = x.shape[0]
         target_len = self.max_len if self.max_len is not None else seq_len
         padding_mask = torch.ones(target_len, dtype=torch.bool)
-        label = self.label_df.loc[sample_id].values
+        label = self.labels_df.loc[sample_id].values
 
         # 不进行数据增强
         # if self.flag == "TRAIN" and self.args.augmentation_ratio > 0:
