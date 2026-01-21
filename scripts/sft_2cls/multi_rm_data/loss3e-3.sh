@@ -10,7 +10,7 @@ else
   SAVE_PATH="./checkpoints_sft_2cls/"
 fi
 
-export CUDA_VISIBLE_DEVICES=0dd
+export CUDA_VISIBLE_DEVICES=7
 
 model_name=RmGPT
 exp_name=multi_rm
@@ -44,7 +44,9 @@ python run.py \
     --learning_rate 3e-3\
     --batch_size 256 \
     --checkpoints $SAVE_PATH \
-    --pretrained_weight '/inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/rmgpt_pump/rmgpt/checkpoints_pretrain/Base_RmGPT2_pretrain_x512_RmGPT_hd512_el4_en8_at16_it0/pretrain_checkpoint.pth'\
+    # --pretrained_weight '/inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/rmgpt_pump/rmgpt_github/checkpoints_pretrain/uae/group3_RmGPT2_pretrain_x512_20260119_032235/UEA_only_pretrain_RmGPT2_pretrain_x512_RmGPT_hd512_el4_en8_at16_it0/pretrain_checkpoint.pth'\
+    # --pretrained_weight '/inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/rmgpt_pump/rmgpt_github/checkpoints_pretrain/uae/group1_RmGPT2_pretrain_x512_20260119_032223/UEA_only_pretrain_RmGPT2_pretrain_x512_RmGPT_hd512_el4_en8_at16_it0/pretrain_checkpoint.pth'\
+    # --pretrained_weight '/inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/rmgpt_pump/rmgpt/checkpoints_pretrain/Base_RmGPT2_pretrain_x512_RmGPT_hd512_el4_en8_at16_it0/pretrain_checkpoint.pth'\
   # --prompt_tune_epoch 20\
   # --prompt_num 10 \
 

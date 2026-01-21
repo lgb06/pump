@@ -1,0 +1,12 @@
+task_dataset:
+  UEA_EthanolConcentration:
+    task_name: pretrain_uae
+    dataset_name: EthanolConcentration
+    dataset: UEA
+    data: UEA
+    root_path: /inspire/hdd/project/continuinglearinginlm/lijiapeng-CZXS25110021/bas_pump/data/dataset/UAE/EthanolConcentration
+    file_list: null
+    limit_size: null
+    seq_len: 2048
+    embed: timeF
+

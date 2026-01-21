@@ -511,12 +511,12 @@ class Exp_All_Task(object):
             if outputs.shape[0] == label.shape[0]:  #[B, num_class]     
                 # loss = criterion(outputs, label.float().squeeze(-1)) 
                 # ERROR? NotImplementedError: "nll_loss_forward_reduce_cuda_kernel_2d_index" not implemented for 'Float'    //NLLLoss 期望的输入是 对数概率，而它期望的 目标（标签） 通常是 类索引（整数类型），而不是浮点数
-                print(f"--------==----------dataset_name:{config['dataset_name']}")
-                print(f"------------------------------label.shape:{label.shape}")
+                # print(f"--------==----------dataset_name:{config['dataset_name']}")
+                # print(f"------------------------------label.shape:{label.shape}")
                 loss = criterion(outputs, label.float().squeeze(-1))
             else:       # B不同
-                print(f"--------!!==----------dataset_name:{config['dataset_name']}")
-                print(f"------------------------------output:{outputs.shape}")
+                # print(f"--------!!==----------dataset_name:{config['dataset_name']}")
+                # print(f"------------------------------output:{outputs.shape}")
                 label = label.repeat(outputs.shape[0]//label.shape[0], 1)
                 loss = criterion(outputs, label.float().squeeze(-1))
         if loss is None or torch.isnan(loss) or torch.isinf(loss):
