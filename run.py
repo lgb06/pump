@@ -80,7 +80,7 @@ if __name__ == '__main__':
     parser.add_argument('--pretrained_weight', type=str, default=None,
                         help='location of pretrained model checkpoints')
     parser.add_argument('--debug', type=str,
-                        default='disabled', help='disabled or online')
+                        default='disabled', help='disabled or online')  # wandb_mode 的参数
     parser.add_argument('--project_name', type=str,
                         default='RmGPTv2-sft', help='wandb project name')
     
@@ -99,7 +99,7 @@ if __name__ == '__main__':
     parser.add_argument('--e_layers', type=int, default=5,
                         help='num of encoder layers')
     parser.add_argument("--input_len", type=int, default=2048)
-    parser.add_argument("--mode_debug", type=bool, default=False)
+    parser.add_argument("--mode_debug", type=bool, default=False)   # 要用的自定义的参数
     parser.add_argument('--fix_seed', type=int, default=2024, help='seed')
 
     #MoE setting

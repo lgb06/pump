@@ -199,6 +199,7 @@ class Model(nn.Module):
         x = self.backbone(x)
         B, V, L, C = x.shape 
         cls_token  = x[:, :, :1,:].reshape(B,V,C)
+        cls_token0 = cls_token.detach().clone()
         # cls_token = cls_token.reshape(B,V*C)
         if self.DG:
             category_token = self.global_token
@@ -229,6 +230,8 @@ class Model(nn.Module):
         category_vector = similarity    
         # exp/exp_sup.py 中的 _select_criterion 和 train_classification。nn.CrossEntropyLoss 在 PyTorch 内部的计算公式是 LogSoftmax + NLLLoss。也就是说，你的代码实际上执行了：LogSoftmax( LogSoftmax( similarity ) )
 
+        if self.debug:
+            return cls_token0, category_token.squeeze(0).repeat(cls_token0.shape(1), 1, 1).permute(1, 0, 2) # cls_token0: [B, V, D]  category_token: [1, 1, M, D]->[M, V, D]
         return category_vector
 
     def get_feature(self, x, x_mark, task_id):
