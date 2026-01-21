@@ -108,6 +108,8 @@ if __name__ == '__main__':
     parser.add_argument("--input_len", type=int, default=2048)
     parser.add_argument("--mode_debug", action="store_true", default=False)
     parser.add_argument("--train_quantizer", action="store_true", default=False)
+    parser.add_argument("--data_demo", action="store_true", default=False,
+                        help="enable demo sampling (single mid-trial / mid-slice) specially for train")
     ##MoE setting
     parser.add_argument('--expert_num', type=int, default=16,
                         help='num of shared experts')

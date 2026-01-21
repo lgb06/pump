@@ -315,6 +315,7 @@ class NLNEMPloader(Dataset):
 
         self.num_classes = args.num_classes 
         self.project_name = args.project_name      
+        self.data_demo = getattr(args, "data_demo", False)
 
         self.seq_len = seq_len
         self.stride_len = stride_len
@@ -554,7 +555,14 @@ class NLNEMPloader(Dataset):
                 # else:                
                 ###### 
 
-                if self.project_name == "few_shot":
+                if self.data_demo and flag == "train":
+                    # Demo: only take the middle trial once
+                    trial_idx = n_trials // 2
+                    sample = np.stack([ch[:, trial_idx] for ch in channels_data], axis=-1)
+                    X_list.append(sample)
+                    y_list.append(label_idx)
+
+                elif self.project_name == "few_shot": 
                 ##### five-shot
                     num4train = min(5, n_trials*4//5)
                     if flag == "train":
@@ -706,6 +714,15 @@ class NLNEMPloader(Dataset):
                 total_sample_num = (file_length - seq_len) // stride_len + 1
 
                 if total_sample_num <= 0:
+                    continue
+
+                # Demo模式：只取最中间的一个切片
+                if getattr(self, "data_demo", False):
+                    mid_start = max(0, (file_length - seq_len) // 2)
+                    if mid_start + seq_len <= file_length:
+                        segment = data_i[mid_start: mid_start + seq_len]
+                        sliced_x_list.append(segment)
+                        sliced_y_list.append(current_label)
                     continue
 
                 # 对应伪代码: start_idx = int(total_sample_num * self.start_percentage) * self.stride_len

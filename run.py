@@ -126,6 +126,8 @@ if __name__ == '__main__':
     # classes num mode
     parser.add_argument('--cls_mode', type=int, default=-1,
                         help='classes num mode')
+    parser.add_argument('--data_demo', action='store_true', default=False,
+                        help='enable demo sampling (single mid-trial / mid-slice)')
 
 
     args = parser.parse_args()
