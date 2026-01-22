@@ -597,7 +597,7 @@ class NLNEMPloader(Dataset):
                 continue
         
         if self.data_demo and flag == "train":        
-            print("data_demo模式，and flag == "train"，仅使用每种情况的中间trial数据. 不作数据划分")
+            print("data_demo模式，and flag == train，仅使用每种情况的中间trial数据. 不作数据划分")
         else:
             # 采用scikit-learn库分层抽样划分
             X_train, X_test, y_train, y_test = train_test_split(
