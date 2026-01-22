@@ -290,7 +290,7 @@ class Exp_All_Task(object):
             return "last"
         return None
 
-    def _store_debug_tokens(self, slot, task_id, batch_idx, cls_token, cls_token_projected, category_token):
+    def _store_debug_tokens(self, slot, task_id, batch_idx, cls_token, cls_token_projected, category_token, labels=None):
         if slot is None or (self.args.ddp and not is_main_process()):
             return
         record = {
@@ -300,6 +300,7 @@ class Exp_All_Task(object):
             "cls_token": cls_token.detach().cpu(),
             "cls_token_projected": cls_token_projected.detach().cpu(),
             "category_token": category_token.detach().cpu() if category_token is not None else None,
+            "labels": labels.detach().cpu() if labels is not None else None,
         }
         self.debug_token_records[slot].append(record)
 
@@ -549,11 +550,12 @@ class Exp_All_Task(object):
         cls_token_projected_dbg = None
         category_token_dbg = None
         with torch.cuda.amp.autocast():
-            outputs = model(batch_x, padding_mask, None, None, task_id=task_id, task_name=task_name, debug=self.debug_mode)
+            outputs = model(batch_x, padding_mask, None, None, task_id=task_id, task_name=task_name)
             if isinstance(outputs, tuple):
                 category_vector, cls_token_dbg, cls_token_projected_dbg, category_token_dbg = outputs
             else:
                 category_vector = outputs
+            label_for_debug = label
             if category_vector.shape[0] == label.shape[0]:  #[B, num_class]     
                 # loss = criterion(outputs, label.float().squeeze(-1)) 
                 # ERROR? NotImplementedError: "nll_loss_forward_reduce_cuda_kernel_2d_index" not implemented for 'Float'    //NLLLoss 期望的输入是 对数概率，而它期望的 目标（标签） 通常是 类索引（整数类型），而不是浮点数
@@ -564,9 +566,10 @@ class Exp_All_Task(object):
                 # print(f"--------!!==----------dataset_name:{config['dataset_name']}")
                 # print(f"------------------------------output:{outputs.shape}")
                 label = label.repeat(category_vector.shape[0]//label.shape[0], 1)
+                label_for_debug = label
                 loss = criterion(category_vector, label.float().squeeze(-1))
         if capture_slot is not None and cls_token_dbg is not None and cls_token_projected_dbg is not None and category_token_dbg is not None:
-            self._store_debug_tokens(capture_slot, task_id, global_batch_idx, cls_token_dbg, cls_token_projected_dbg, category_token_dbg)
+            self._store_debug_tokens(capture_slot, task_id, global_batch_idx, cls_token_dbg, cls_token_projected_dbg, category_token_dbg, labels=label_for_debug)
         if loss is None or torch.isnan(loss) or torch.isinf(loss):
             print(f"Loss is invalid: {loss}. Skipping this iteration!--train_classification")
         return loss
