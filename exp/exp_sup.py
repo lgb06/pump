@@ -131,6 +131,8 @@ class Exp_All_Task(object):
         self.device_id = device_id
         print("device id", self.device_id)
         self.model = self._build_model()
+        self.debug_mode = getattr(args, "mode_debug", False)
+        self.debug_token_records = {"first": [], "last": []}
         # Initialize training history storage
         self.training_history = {'train_loss': [], 'train_loss_PHM_ROT': [], 
                                 'eval_CLS-acc_PHM_ROT': [], 'val_acc': []}
@@ -279,6 +281,39 @@ class Exp_All_Task(object):
             model_total_params / 1e6, trainable_total_param / 1e6,
             trainable_total_param / model_total_params))
     
+    def _debug_epoch_slot(self, epoch):
+        if (not self.debug_mode) or (epoch is None):
+            return None
+        if epoch == 0:
+            return "first"
+        if epoch == self.args.train_epochs - 1:
+            return "last"
+        return None
+
+    def _store_debug_tokens(self, slot, task_id, batch_idx, cls_token, cls_token_projected, category_token):
+        if slot is None or (self.args.ddp and not is_main_process()):
+            return
+        record = {
+            "task_id": task_id,
+            "task_name": self.task_data_config_list[task_id][0],
+            "batch_index": int(batch_idx) if batch_idx is not None else None,
+            "cls_token": cls_token.detach().cpu(),
+            "cls_token_projected": cls_token_projected.detach().cpu(),
+            "category_token": category_token.detach().cpu() if category_token is not None else None,
+        }
+        self.debug_token_records[slot].append(record)
+
+    def _dump_debug_tokens(self):
+        if not self.debug_mode or (self.args.ddp and not is_main_process()):
+            return
+        last_epoch_idx = self.args.train_epochs - 1
+        first_path = os.path.join(self.path, "debug_tokens_epoch0.pt")
+        last_path = os.path.join(self.path, f"debug_tokens_epoch{last_epoch_idx}.pt")
+        if self.debug_token_records["first"]:
+            torch.save(self.debug_token_records["first"], first_path)
+        if self.debug_token_records["last"]:
+            torch.save(self.debug_token_records["last"], last_path)
+    
     def load_model_from_pretrain(self,setting):
         # Load pretrained weights (Optional),如果有预训练权重，加载预训练权重；读取相同名字的部分都权重
         if self.args.pretrained_weight is not None:
@@ -394,11 +429,14 @@ class Exp_All_Task(object):
                 with open(history_file, 'w') as f:
                     json.dump(self.training_history, f, indent=2)
 
+            if epoch == 0 or epoch == self.args.train_epochs - 1:
+                # 在首/末 epoch epoch 结束后立即write token
+                self._dump_debug_tokens()
+
         if is_main_process():
             with open(history_file, 'w') as f:
                 json.dump(self.training_history, f, indent=2)
             plot_all_train_losses(history_file)
-
         return self.model
 
     def train_one_epoch(self, model_optim, data_loader_cycle, criterion_list, epoch, train_steps, scaler):
@@ -433,9 +471,10 @@ class Exp_All_Task(object):
             len_sample_list = max(len_sample_list, 1.0)
             for sample_idx in range(len_sample_list):
                 sample = sample_list[sample_idx]
+                global_batch_idx = i * len_sample_list + sample_idx
                 if  'classification' in task_name:
                     loss = self.train_classification(
-                        self.model, sample, criterion_list[task_id], self.task_data_config_list[task_id][1], task_id)
+                        self.model, sample, criterion_list[task_id], self.task_data_config_list[task_id][1], task_id, epoch=epoch, global_batch_idx=global_batch_idx)
                     loss_scale = 1.0
                 elif  'RUL' in task_name:
                     loss = self.train_RUL(
@@ -494,7 +533,7 @@ class Exp_All_Task(object):
 
 
 
-    def train_classification(self, model, this_batch, criterion, config, task_id):
+    def train_classification(self, model, this_batch, criterion, config, task_id, epoch=None, global_batch_idx=None):
         task_name = config['task_name']
         try:
             batch_x, label, padding_mask = this_batch
@@ -505,20 +544,29 @@ class Exp_All_Task(object):
         batch_x = batch_x.float().to(self.device_id)
         padding_mask = batch_x
         label = label.to(self.device_id)
+        capture_slot = self._debug_epoch_slot(epoch)
+        cls_token_dbg = None
+        cls_token_projected_dbg = None
+        category_token_dbg = None
         with torch.cuda.amp.autocast():
-            outputs = model(batch_x, padding_mask, None,
-                            None, task_id=task_id, task_name=task_name)
-            if outputs.shape[0] == label.shape[0]:  #[B, num_class]     
+            outputs = model(batch_x, padding_mask, None, None, task_id=task_id, task_name=task_name, debug=self.debug_mode)
+            if isinstance(outputs, tuple):
+                category_vector, cls_token_dbg, cls_token_projected_dbg, category_token_dbg = outputs
+            else:
+                category_vector = outputs
+            if category_vector.shape[0] == label.shape[0]:  #[B, num_class]     
                 # loss = criterion(outputs, label.float().squeeze(-1)) 
                 # ERROR? NotImplementedError: "nll_loss_forward_reduce_cuda_kernel_2d_index" not implemented for 'Float'    //NLLLoss 期望的输入是 对数概率，而它期望的 目标（标签） 通常是 类索引（整数类型），而不是浮点数
                 # print(f"--------==----------dataset_name:{config['dataset_name']}")
                 # print(f"------------------------------label.shape:{label.shape}")
-                loss = criterion(outputs, label.float().squeeze(-1))
+                loss = criterion(category_vector, label.float().squeeze(-1))
             else:       # B不同
                 # print(f"--------!!==----------dataset_name:{config['dataset_name']}")
                 # print(f"------------------------------output:{outputs.shape}")
-                label = label.repeat(outputs.shape[0]//label.shape[0], 1)
-                loss = criterion(outputs, label.float().squeeze(-1))
+                label = label.repeat(category_vector.shape[0]//label.shape[0], 1)
+                loss = criterion(category_vector, label.float().squeeze(-1))
+        if capture_slot is not None and cls_token_dbg is not None and cls_token_projected_dbg is not None and category_token_dbg is not None:
+            self._store_debug_tokens(capture_slot, task_id, global_batch_idx, cls_token_dbg, cls_token_projected_dbg, category_token_dbg)
         if loss is None or torch.isnan(loss) or torch.isinf(loss):
             print(f"Loss is invalid: {loss}. Skipping this iteration!--train_classification")
         return loss

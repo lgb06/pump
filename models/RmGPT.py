@@ -167,16 +167,12 @@ class Model(nn.Module):
             return x
     
     def forward(self, x_enc, x_mark_enc, x_dec=None, x_mark_dec=None,
-                mask=None, task_id=None, task_name=None, enable_mask=None):
+                mask=None, task_id=None, task_name=None, enable_mask=None, debug = False):
         #X_enc [B,L,D]
         x_mark_enc = x_mark_enc.to(torch.int)
         if 'classification' in task_name:
-            if self.debug:
-                cls_token, category_token = self.classification(x_enc, x_mark_enc, task_id)
-                return cls_token, category_token
-            else:
-                dec_out = self.classification(x_enc, x_mark_enc, task_id)
-                return dec_out  # [B, N]
+            dec_out = self.classification(x_enc, x_mark_enc, task_id, debug)
+            return dec_out  # logits ([B, N]) or (logits, debug_tokens, ..., ...) in debug mode
         if 'pretrain' in task_name:
             dec_out = self.pretraining(x_enc, x_mark_enc, task_id,
                                        enable_mask=enable_mask)
@@ -189,7 +185,7 @@ class Model(nn.Module):
             return dec_out
         return None
 
-    def classification(self, x, x_mark, task_id):
+    def classification(self, x, x_mark, task_id, debug = False):
         #变换得到输入的tokens
         # print(f"def classification: x.shape:{x.shape}")
         signal_tokens, cls_tokens = self.get_input_tokens(x,x_mark, task_id)
@@ -199,8 +195,6 @@ class Model(nn.Module):
         x = self.backbone(x)
         B, V, L, C = x.shape 
         cls_token  = x[:, :, :1,:].reshape(B,V,C)
-        cls_token0 = cls_token.detach().clone()
-        # cls_token = cls_token.reshape(B,V*C)
         if self.DG:
             category_token = self.global_token
         else:
@@ -208,10 +202,10 @@ class Model(nn.Module):
             category_token = self.category_token  # Shared across all classification tasks
             if category_token is None:
                 raise ValueError("Shared category_token is not initialized.")
-        cls_token = self.cls_head(cls_token)
+        cls_token_projected = self.cls_head(cls_token)
 
         # 将 cls_token 从 [B, V, C] 调整为 [B, V, 1, D]
-        cls_token_reshaped = cls_token.unsqueeze(2)  # [B, V, 1, D]         [B，C， 1，d_model] 
+        cls_token_reshaped = cls_token_projected.unsqueeze(2)  # [B, V, 1, D]         [B，C， 1，d_model] 
 
         # 将 category_token 从 [1, 1！！, M, D] 广播到 [B, 1！！, M, D]    ## 其实就是[B，1！！， num_classes，d_model] 
         category_token_expanded = category_token.repeat(B, 1, 1, 1)
@@ -230,8 +224,13 @@ class Model(nn.Module):
         category_vector = similarity    
         # exp/exp_sup.py 中的 _select_criterion 和 train_classification。nn.CrossEntropyLoss 在 PyTorch 内部的计算公式是 LogSoftmax + NLLLoss。也就是说，你的代码实际上执行了：LogSoftmax( LogSoftmax( similarity ) )
 
-        if self.debug:
-            return cls_token0, category_token.squeeze(0).repeat(cls_token0.shape(1), 1, 1).permute(1, 0, 2) # cls_token0: [B, V, D]  category_token: [1, 1, M, D]->[M, V, D]
+        if debug:
+            debug_cls_token = cls_token.detach()  # cls_token0: [B, V, D] 
+            debug_cls_token_projected = cls_token_projected.detach()  # cls_token_projected: [B, V, D]
+            # debug_category_token = category_token.squeeze(0).squeeze(0).detach()  # [M, D]
+            debug_category_token = category_token.squeeze(0).repeat(cls_token.shape(1), 1, 1).permute(1, 0, 2) # category_token: [1, 1, M, D]->[M, V, D]
+            # Return logits together with raw tokens for visualization
+            return category_vector, debug_cls_token, debug_cls_token_projected, debug_category_token
         return category_vector
 
     def get_feature(self, x, x_mark, task_id):
