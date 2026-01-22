@@ -228,7 +228,7 @@ class Model(nn.Module):
             debug_cls_token = cls_token.detach()  # cls_token0: [B, V, D] 
             debug_cls_token_projected = cls_token_projected.detach()  # cls_token_projected: [B, V, D]
             # debug_category_token = category_token.squeeze(0).squeeze(0).detach()  # [M, D]
-            debug_category_token = category_token.squeeze(0).repeat(cls_token.shape(1), 1, 1).permute(1, 0, 2) # category_token: [1, 1, M, D]->[M, V, D]
+            debug_category_token = category_token.squeeze(0).repeat(cls_token.shape[1], 1, 1).permute(1, 0, 2) # category_token: [1, 1, M, D]->[M, V, D]
             # Return logits together with raw tokens for visualization
             return category_vector, debug_cls_token, debug_cls_token_projected, debug_category_token
         return category_vector
