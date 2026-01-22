@@ -595,38 +595,40 @@ class NLNEMPloader(Dataset):
             except Exception as e:
                 print(f"Error reading {key}: {e}")
                 continue
-                
-        # 采用scikit-learn库分层抽样划分
-        X_train, X_test, y_train, y_test = train_test_split(
-            X_list, y_list,
-            test_size=0.2,       # 测试集占20%
-            random_state=42,     # 设置随机种子以保证结果可复现
-            stratify=y_list      # 关键参数：按照y_list的类别比例进行划分
-        )
         
-        if self.project_name == "few_shot":
-            print("进行few_shot，每个类别训练few组数据，其余进行测试")
+        if self.data_demo and flag == "train":        
+            print("data_demo模式，and flag == "train"，仅使用每种情况的中间trial数据. 不作数据划分")
         else:
-            print(f"一共有 {len(X_list)} 组数据")
-            print("进行训练测试集划分...")
-            if self.flag == 'train':
-                print("此为训练数据")
-                X_list=X_train
-                y_list=y_train
-            elif self.flag == 'test':
-                print("此为测试数据，实验setting不再以8:2进行数据划分，测试集即为zeroshot全集")
-                # X_list=X_test
-                # y_list=y_test
-            else:
-                pass
+            # 采用scikit-learn库分层抽样划分
+            X_train, X_test, y_train, y_test = train_test_split(
+                X_list, y_list,
+                test_size=0.2,       # 测试集占20%
+                random_state=42,     # 设置随机种子以保证结果可复现
+                stratify=y_list      # 关键参数：按照y_list的类别比例进行划分
+            )
         
+            if self.project_name == "few_shot":
+                print("进行few_shot，每个类别训练few组数据，其余进行测试")
+            else:
+                print(f"一共有 {len(X_list)} 组数据")
+                print("进行训练测试集划分...")
+                if self.flag == 'train':
+                    print("此为训练数据")
+                    X_list=X_train
+                    y_list=y_train
+                elif self.flag == 'test':
+                    print("此为测试数据，实验setting不再以8:2进行数据划分，测试集即为zeroshot全集")
+                    # X_list=X_test
+                    # y_list=y_test
+                else:
+                    pass
+                
         # 二分类
         # 在分层抽样划分后进行，类别置 0 (healthy) 和 1 (faulty)
         if cls_mode == -1:
             for i in range(len(y_list)):
                 if y_list[i] != 0:
                     y_list[i] = 1
-
         print("划分后,一共有 {len(X_list)} 组数据,数据样本统计信息：")
 
         
