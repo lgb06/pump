@@ -550,7 +550,7 @@ class Exp_All_Task(object):
         cls_token_projected_dbg = None
         category_token_dbg = None
         with torch.cuda.amp.autocast():
-            outputs = model(batch_x, padding_mask, None, None, task_id=task_id, task_name=task_name)
+            outputs = model(batch_x, padding_mask, None, None, task_id=task_id, task_name=task_name, debug=self.debug_mode)
             if isinstance(outputs, tuple):
                 category_vector, cls_token_dbg, cls_token_projected_dbg, category_token_dbg = outputs
             else:
