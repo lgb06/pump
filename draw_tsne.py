@@ -12,10 +12,10 @@ import torch  # noqa: E402
 from sklearn.manifold import TSNE  # noqa: E402
 
 
-def _sample_points(data: np.ndarray, labels: np.ndarray, max_points: int, highlight_mask=None):
+def _sample_points(data: np.ndarray, labels: np.ndarray, max_points: int, highlight_mask=None, seed: int = 42):
     if data.shape[0] <= max_points:
         return data, labels, highlight_mask
-    rng = np.random.default_rng(42)
+    rng = np.random.default_rng(seed)
     if highlight_mask is None:
         indices = rng.choice(data.shape[0], size=max_points, replace=False)
         return data[indices], labels[indices], None
@@ -174,6 +174,12 @@ def main():
         default=2500,
         help="Max number of points to use for t-SNE (randomly sampled if exceeded).",
     )
+    parser.add_argument(
+        "--sample_seed",
+        type=int,
+        default=42,
+        help="Random seed for sampling points.",
+    )
     args = parser.parse_args()
 
     pt_path = Path(args.pt_path)
@@ -207,7 +213,9 @@ def main():
     if cls_tokens_list:
         data_cls = np.concatenate(cls_tokens_list, axis=0)
         labels_cls = np.concatenate(cls_labels_list, axis=0)
-        data_cls, labels_cls, _ = _sample_points(data_cls, labels_cls, args.max_points)
+        sample_ratio = min(args.max_points, data_cls.shape[0]) / data_cls.shape[0]
+        print(f"[Plot1] total points before sampling: {data_cls.shape[0]}, sample ratio: {sample_ratio:.2%}")
+        data_cls, labels_cls, _ = _sample_points(data_cls, labels_cls, args.max_points, seed=args.sample_seed)
         plot_tsne(
             data_cls,
             labels_cls,
@@ -255,7 +263,9 @@ def main():
         labels_proj = np.empty((0,))
 
     if len(data_proj) > 0:
-        data_proj, labels_proj, _ = _sample_points(data_proj, labels_proj, args.max_points)
+        sample_ratio = min(args.max_points, data_proj.shape[0]) / data_proj.shape[0]
+        print(f"[Plot2] projected points before sampling: {data_proj.shape[0]}, sample ratio: {sample_ratio:.2%}")
+        data_proj, labels_proj, _ = _sample_points(data_proj, labels_proj, args.max_points, seed=args.sample_seed)
 
     # Append category tokens (from last batch) and mark them
     if category_tokens is not None:
